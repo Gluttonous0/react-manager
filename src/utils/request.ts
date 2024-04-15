@@ -42,6 +42,7 @@ instance.interceptors.response.use(
     return data.data
   },
   error => {
+    console.log("error");
     hideLoading()
     message.error(error.msg)
     return Promise.reject(error.msg)
@@ -50,9 +51,9 @@ instance.interceptors.response.use(
 
 export default {
   get<T>(url: string, params?: any): Promise<T> {
-    return axios.get(url, { params })
+    return instance.get(url, { params })
   },
   post<T>(url: string, params?: any): Promise<T> {
-    return axios.post(url, params)
+    return instance.post(url, params)
   }
 }

@@ -7,7 +7,7 @@ export default function Welcome() {
     request.post('/users/login', {})
   }, [])
   const handleClick = () => {
-    request.post('/users/login', {})
+    request.get('/users/login', {})
   }
   const handleStorage = (num: number) => {
     if (num === 1) {
