@@ -1,13 +1,13 @@
 import { Button } from 'antd'
 import request from '@/utils/request'
-import { useEffect } from 'react'
+
 import storage from '@/utils/storage'
+import { toLocalDate, toLocalDateExp } from '@/utils'
 export default function Welcome() {
-  useEffect(() => {
-    request.post('/users/login', {})
-  }, [])
   const handleClick = () => {
-    request.get('/users/login', {})
+    console.log('日期:', toLocalDate(new Date(), 'HH:mm:ss'))
+    console.log('正则:', toLocalDateExp())
+    request.post('/users/login', {})
   }
   const handleStorage = (num: number) => {
     if (num === 1) {

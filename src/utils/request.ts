@@ -2,8 +2,9 @@ import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
 import { hideLoading, showLoading } from './loading'
 import storage from './storage'
+import env from '@/config'
+console.log('config', env)
 
-console.log(import.meta.env.VITE_MOCK)
 //创建实例对象
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API,
@@ -19,10 +20,10 @@ instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = 'Token::' + token
     }
-    if (import.meta.env.VITE_MOCK === 'true') {
-      config.baseURL = import.meta.env.VITE_MOCK_API
+    if (env.mock) {
+      config.baseURL = env.mockApi
     } else {
-      config.baseURL = import.meta.env.VITE_BASE_API
+      config.baseURL = env.baseApi
     }
     return {
       ...config
@@ -49,7 +50,7 @@ instance.interceptors.response.use(
     return data.data
   },
   error => {
-    console.log("error");
+    console.log('error')
     hideLoading()
     message.error(error.msg)
     return Promise.reject(error.msg)

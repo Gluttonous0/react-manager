@@ -1,5 +1,5 @@
 import { Navigate, createBrowserRouter, useRoutes } from 'react-router-dom'
-import Login from '@/views/Login'
+import Login from '@/views/login/Login'
 import Error from '@/views/Erorr'
 import NotFound from '@/views/NotFound'
 import Welcome from '@/views/Welcome'
