@@ -3,7 +3,10 @@
  */
 
 //格式化金额
-export const formatMoney = (num: Number | string) => {
+export const formatMoney = (num?: Number | string) => {
+  if (!num) {
+    return 0
+  }
   const a = parseFloat(num.toString())
   // console.log(a)
   // console.log(typeof num)
@@ -11,7 +14,10 @@ export const formatMoney = (num: Number | string) => {
 }
 
 //格式化数字，正则表达式
-export const formatNum = (num: Number | string) => {
+export const formatNum = (num?: Number | string) => {
+  if (!num) {
+    return 0
+  }
   const a = num.toString()
   if (a.indexOf('.') > -1) {
     const exp = /(\d)(?=(\d{3})+\.)/g
@@ -31,9 +37,13 @@ export const toLocalDate = (date?: Date, rule?: string) => {
   return curDate.toLocaleString()
 }
 //格式化日期，正则表达式
-export const toLocalDateExp = (date?: Date, rule?: string) => {
+export const formatDate = (date?: Date | string, rule?: string) => {
   let curDate = new Date()
-  if (date) curDate = date
+  if (date instanceof Date) {
+    curDate = date
+  } else if (date) {
+    curDate = new Date(date)
+  }
 
   let fmt = rule || 'yyyy-MM-dd HH:mm:ss'
   fmt = fmt.replace(/(y+)/, curDate.getFullYear().toString())
@@ -53,4 +63,15 @@ export const toLocalDateExp = (date?: Date, rule?: string) => {
     fmt = fmt.replace(new RegExp(`${k}`), isLength ? `0${O[k].toString()}` : O[k].toString())
   }
   return fmt
+}
+
+//用户状态转换
+export const formatState = (state: number) => {
+  if (state === 1) {
+    return '在职'
+  } else if (state === 2) {
+    return '离职'
+  } else {
+    return ''
+  }
 }

@@ -7,6 +7,7 @@ import api from '@/api/api'
 import { Logins } from '@/types/api'
 import storage from '@/utils/storage'
 import { useState } from 'react'
+import store from '@/store'
 // type FieldType = {
 //   username?: string
 //   password?: string
@@ -16,15 +17,21 @@ import { useState } from 'react'
 export default function Login() {
   const [loading, setLoading] = useState(false)
   const onFinish = async (values: Logins.params) => {
-    setLoading(true)
-    const data: any = await api.login(values)
-    console.log(data.code)
-    setLoading(false)
-    console.log('data', data)
-    storage.set('token', data)
-    message.success('登录成功')
-    const params = new URLSearchParams(location.search)
-    location.href = params.get('callback') || '/'
+    try {
+      setLoading(true)
+      const data: any = await api.login(values)
+      console.log(data.code)
+      setLoading(false)
+      storage.set('token', data)
+      store.token = data
+      message.success('登录成功')
+      const params = new URLSearchParams(location.search)
+      setTimeout(() => {
+        location.href = params.get('callback') || '/'
+      })
+    } catch (error) {
+      setLoading(false)
+    }
   }
 
   return (

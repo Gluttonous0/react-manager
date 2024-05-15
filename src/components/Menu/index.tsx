@@ -5,6 +5,7 @@ import { Menu } from 'antd'
 import { DesktopOutlined, SettingOutlined } from '@ant-design/icons'
 import styles from './index.module.less'
 import { useNavigate } from 'react-router-dom'
+import type { MenuProps } from 'antd'
 
 const SideMenu = () => {
   const navigate = useNavigate()
@@ -30,13 +31,18 @@ const SideMenu = () => {
       ]
     }
   ]
+  const handleClick: MenuProps['onClick'] = ({ key }) => {
+    if (key == '1') {
+      location.href = '/dashboard'
+    }
+  }
   return (
     <div>
       <div className={styles.logo} onClick={handleClickLogo}>
         <img src='/imgs/logo.png' alt='' />
         <span>猛男货运</span>
       </div>
-      <Menu defaultSelectedKeys={['1']} mode='inline' theme='dark' items={items} />
+      <Menu defaultSelectedKeys={['1']} mode='inline' theme='dark' items={items} onClick={handleClick} />
     </div>
   )
 }

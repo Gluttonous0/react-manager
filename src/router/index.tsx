@@ -1,12 +1,14 @@
 /**
  * 路由设置
  */
-import { Navigate, createBrowserRouter, useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes } from 'react-router-dom'
 import Login from '@/views/login/Login'
 import Error from '@/views/Erorr'
 import NotFound from '@/views/NotFound'
 import Welcome from '@/views/welcome'
 import Layout from '@/layout/index'
+import DashBoard from '@/views/dashboard'
+import User from '@/views/system/user'
 
 const router = [
   {
@@ -19,6 +21,14 @@ const router = [
       {
         path: '/welcome',
         element: <Welcome />
+      },
+      {
+        path: '/dashboard',
+        element: <DashBoard />
+      },
+      {
+        path: '/userList',
+        element: <User />
       }
     ]
   },
