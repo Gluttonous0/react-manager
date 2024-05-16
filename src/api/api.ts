@@ -31,7 +31,7 @@ export default {
     return request.get<Dashboard.RadarData>('/order/dashboard/getRadarData')
   },
   //获取用户列表
-  getUserList() {
-    return request.get<ResultData<User.UserItem>>('/users/list')
+  getUserList(params: User.Params) {
+    return request.get<ResultData<User.UserItem>>('/users/list', params)
   }
 }

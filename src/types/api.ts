@@ -23,6 +23,11 @@ export interface ResultData<T = any> {
   }
 }
 
+export interface PageParams {
+  pageNum: number
+  pageSize: number
+}
+
 export namespace Logins {
   export interface params {
     userName: string
@@ -31,7 +36,7 @@ export namespace Logins {
 }
 
 export namespace User {
-  export interface Params {
+  export interface Params extends PageParams {
     userId?: number
     userName?: number
     state?: number

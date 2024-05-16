@@ -35,6 +35,9 @@ const SideMenu = () => {
     if (key == '1') {
       location.href = '/dashboard'
     }
+    if (key == '3') {
+      location.href = '/userList'
+    }
   }
   return (
     <div>
