@@ -4,6 +4,7 @@ import { formatDate } from '@/utils'
 import { Button, Table, Form, Input, Select, Space } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useState } from 'react'
+import CreateUser from './CreateUser'
 
 export default function UserList() {
   const [form] = Form.useForm()
@@ -204,6 +205,7 @@ export default function UserList() {
         />
         ;
       </div>
+      <CreateUser />
     </div>
   )
 }
