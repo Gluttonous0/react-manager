@@ -57,6 +57,16 @@ export namespace User {
     mobile: string
     job: string
   }
+  export interface CreateParams {
+    userName: string
+    userEmail: string
+    deptId: string
+    state: number
+    roleList: string[]
+    userImg: string
+    mobile: string
+    job: string
+  }
 }
 
 export namespace Dashboard {
