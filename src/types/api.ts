@@ -34,7 +34,7 @@ export namespace Logins {
     userPwd: string
   }
 }
-
+export type AnyObject = Record<string, any>
 export namespace User {
   export interface Params extends PageParams {
     userId?: number
@@ -57,6 +57,15 @@ export namespace User {
     mobile: string
     job: string
   }
+  export interface UserNewItem extends UserItem {
+    userName: string
+    userEmail: string
+    deptId: string
+    state: number
+    roleList: string
+    mobile: string
+    job: string
+  }
   export interface CreateParams {
     userName: string
     userEmail: string
@@ -66,6 +75,9 @@ export namespace User {
     userImg: string
     mobile: string
     job: string
+  }
+  export interface EditParams extends CreateParams {
+    userId: number
   }
 }
 

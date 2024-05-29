@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { Dashboard, Logins, ResultData, User } from '@/types/api'
+import { Dashboard, Logins, ResultData, User, AnyObject } from '@/types/api'
 
 export default {
   //登录
@@ -32,10 +32,18 @@ export default {
   },
   //获取用户列表
   getUserList(params: User.Params) {
-    return request.get<ResultData<User.UserItem>>('/users/list', params)
+    return request.get<ResultData<AnyObject>>('/users/list', params)
   },
   //创建用户
   createUser(params: User.CreateParams) {
     return request.post('/users/create', params)
+  },
+  //编辑用户
+  editUser(params: User.CreateParams) {
+    return request.post('/users/edit', params)
+  },
+  //删除用户
+  delUser(params: { userIds: number[] }) {
+    return request.post('/users/delete', params)
   }
 }

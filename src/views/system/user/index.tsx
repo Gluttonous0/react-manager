@@ -1,7 +1,7 @@
 import api from '@/api/api'
-import { PageParams, User } from '@/types/api'
+import { AnyObject, PageParams, User } from '@/types/api'
 import { formatDate } from '@/utils'
-import { Button, Table, Form, Input, Select, Space } from 'antd'
+import { Button, Table, Form, Input, Select, Space, Modal, message } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import CreateUser from './CreateUser'
@@ -9,8 +9,9 @@ import { IAction } from '@/types/modal'
 
 export default function UserList() {
   const [form] = Form.useForm()
-  const [data, setData] = useState<User.UserItem[]>([])
+  const [data, setData] = useState<AnyObject[]>([])
   const [total, setTotal] = useState(0)
+  const [newAdmin, setNewAdmin] = useState<AnyObject[]>([])
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10
@@ -18,14 +19,20 @@ export default function UserList() {
   const userRef = useRef<{
     open: (type: IAction, data?: User.UserItem) => void | undefined
   }>()
-
+  const useAdminRef = useRef(newAdmin)
   useEffect(() => {
-    console.log(pagination)
     getUserList({
       pageNum: pagination.current,
       pageSize: pagination.pageSize
     })
   }, [pagination.current, pagination.pageSize])
+  console.log(useAdminRef.current)
+
+  //手动更新列表数据
+  // useEffect(() => {
+  //   useAdminRef.current = newAdmin
+  //   setData(data => [...data, useAdminRef.current[0]])
+  // }, [newAdmin])
 
   //获取用户列表
   const getUserList = async (params: PageParams) => {
@@ -35,18 +42,24 @@ export default function UserList() {
       pageNum: params.pageNum,
       pageSize: params.pageSize
     })
-    const list = Array.from({ length: 51 })
-      .fill({})
-      .map((item: any) => {
-        ;(item = { ...data.list[0] }), (item.userId = Math.random())
-        return item
-      })
-    setData(list)
-    setTotal(list.length)
+    // console.log('data', data)
+    // const list = Array.from({ length: 3 })
+    //   .fill({})
+    //   .map((item: any) => {
+    //     ;(item = { ...data.list[0] }), (item.userId = Math.random())
+    //     return item
+    //   })
+    setData(data.list)
+    setTotal(data.list.length)
     // setPagination({
     //   current: data.page.pageNum,
     //   pageSize: data.page.pageSize
     // })
+  }
+
+  const handleDataFromChild = (data: AnyObject[]) => {
+    // 这个函数会被子组件调用来传递数据
+    setNewAdmin(() => data)
   }
 
   //搜索
@@ -67,20 +80,36 @@ export default function UserList() {
       })
     }
   }
-  // {
-  //   key: '1',
-  //   name: '胡彦斌',
-  //   age: 32,
-  //   address: '西湖区湖底公园1号'
-  // },
-  // {
-  //   key: '2',
-  //   name: '胡彦祖',
-  //   age: 42,
-  //   address: '西湖区湖底公园1号'
-  // }
+
+  //创建用户
   const handleCreate = () => {
     userRef.current?.open('create')
+  }
+  //编辑用户
+  const handleEdit = (record: User.UserItem) => {
+    userRef.current?.open('edit', record)
+  }
+  //删除用户（单个）
+  const handleDel = (userId: number) => {
+    Modal.confirm({
+      title: '删除确认',
+      content: <span>确认删除该用户吗</span>,
+      onOk: () => {
+        handleUserDelSubmit([userId])
+      }
+    })
+  }
+
+  //公共删除用户接口
+  const handleUserDelSubmit = async (ids: number[]) => {
+    try {
+      await api.delUser({ userIds: ids })
+      message.success('删除成功')
+      getUserList({
+        pageNum: 1,
+        pageSize: pagination.pageSize
+      })
+    } catch (error) {}
   }
 
   const columns: ColumnsType<User.UserItem> = [
@@ -134,13 +163,14 @@ export default function UserList() {
     },
     {
       title: '操作',
-      dataIndex: 'address',
       key: 'address',
-      render() {
+      render(record: User.UserItem) {
         return (
           <Space>
-            <Button type='text'>编辑</Button>
-            <Button type='text' danger>
+            <Button type='text' onClick={() => handleEdit(record)}>
+              编辑
+            </Button>
+            <Button type='text' danger onClick={() => handleDel(record.userId)}>
               删除
             </Button>
           </Space>
@@ -148,6 +178,9 @@ export default function UserList() {
       }
     }
   ]
+
+  //传递子组件数据
+
   return (
     <div className='user_list'>
       <Form className='search_form' form={form} layout='inline' initialValues={{ state: 0 }}>
@@ -202,8 +235,8 @@ export default function UserList() {
             pageSize: pagination.pageSize,
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: function (totle) {
-              return `总共${totle}条`
+            showTotal: function (total) {
+              return `总共${total}条`
             },
             onChange: (page, pageSize) => {
               setPagination({
@@ -223,6 +256,7 @@ export default function UserList() {
             pageSize: pagination.pageSize
           })
         }}
+        onDataReceived={handleDataFromChild}
       />
     </div>
   )

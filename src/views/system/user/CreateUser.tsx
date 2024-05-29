@@ -1,12 +1,12 @@
 import { Modal, Form, Input, Select, Upload } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { useImperativeHandle, useState } from 'react'
+import { useEffect, useImperativeHandle, useState } from 'react'
 // import storage from '@/utils/storage'
 import type { GetProp, UploadProps } from 'antd'
 import { message } from '@/utils/AntdGlobal'
 import { UploadChangeParam } from 'antd/lib/upload'
 import { IAction, ImodalProp } from '@/types/modal'
-import { User } from '@/types/api'
+import { AnyObject, User } from '@/types/api'
 import api from '@/api/api'
 import axios from 'axios'
 
@@ -17,10 +17,13 @@ const CreateUser = (props: ImodalProp) => {
   const [visible, setVisible] = useState(false)
   const [action, setAction] = useState<IAction>('create')
   const [showUpload, setShowUpload] = useState(false)
-  const [newAdmin, setNewAdmin] = useState()
+  const [newAdmin, setNewAdmin] = useState<AnyObject[]>([])
   const [image, setImage] = useState<string | undefined>()
-  console.log(newAdmin)
+  const [numstate, setNumState] = useState(1)
 
+  useEffect(() => {
+    sendDataToParent()
+  }, [newAdmin])
   //暴露子组件open方法
   useImperativeHandle(props.mRef, () => {
     return {
@@ -29,16 +32,19 @@ const CreateUser = (props: ImodalProp) => {
   })
 
   //调用弹窗显示方法
-  const open = (type: IAction, data?: User.UserItem) => {
+  const open = (type: IAction, data?: AnyObject) => {
     setAction(type)
     setVisible(true)
+    if (type === 'edit' && data) {
+      form.setFieldsValue(data)
+      setImage(data.userImg)
+    }
   }
 
   const handleSub = async (params: any) => {
     try {
       const data = await (await axios.post('http://localhost:5000/api/users/create', params)).data
-      console.log(data)
-      setNewAdmin(data.data)
+      setNewAdmin(prevEmployees => [...prevEmployees, data.data])
     } catch (error) {
       console.error('Error sending request:', error)
     }
@@ -46,23 +52,46 @@ const CreateUser = (props: ImodalProp) => {
   //提交表单
   const handleSubmit = async () => {
     const valid = await form.validateFields()
-    console.log(valid)
     if (valid) {
-      const params = {
-        ...form.getFieldsValue(),
-        userImg: image
+      const newValid = form.getFieldsValue()
+      for (let k in newValid) {
+        if (!newValid[k]) {
+          newValid[k] = ''
+        }
       }
+      const params = {
+        ...newValid,
+        userImg: image,
+        createId: numstate,
+        deptName: 'deptName' + numstate,
+        id: Math.random(),
+        msg: numstate,
+        role: numstate,
+        userId: Math.random(),
+        state: numstate
+      }
+      console.log(params)
+
       if (action === 'create') {
         handleSub(params)
         message.success('创建成功')
-        handleCancel()
+      } else {
+        await api.editUser(params)
+        message.success('修改成功')
       }
+      setNumState(numstate => numstate + 1)
     }
+    handleCancel()
+    props.update()
   }
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
     props.update
+  }
+  //回传数据到父组件
+  const sendDataToParent = () => {
+    props.onDataReceived(newAdmin)
   }
 
   //上传之前,接口处理 base64处理本地储存照片
@@ -120,6 +149,9 @@ const CreateUser = (props: ImodalProp) => {
       onCancel={handleCancel}
     >
       <Form labelCol={{ span: 4 }} labelAlign='right' form={form}>
+        <Form.Item name='userId' hidden>
+          <Input placeholder='请输入用户名称'></Input>
+        </Form.Item>
         <Form.Item label='用户名称' name='userName' rules={[{ required: true, message: '请输入用户名称' }]}>
           <Input placeholder='请输入用户名称'></Input>
         </Form.Item>
@@ -159,7 +191,13 @@ const CreateUser = (props: ImodalProp) => {
             //   return file
             // }}
           >
-            {image ? <img src={image} alt='pic' /> : showUpload ? <LoadingOutlined /> : <PlusOutlined />}
+            {image ? (
+              <img src={image} alt='pic' style={{ width: '100%', borderRadius: '100%' }} />
+            ) : showUpload ? (
+              <LoadingOutlined />
+            ) : (
+              <PlusOutlined />
+            )}
           </Upload>
         </Form.Item>
       </Form>
