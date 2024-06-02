@@ -27,6 +27,11 @@ const SideMenu = () => {
           label: '用户管理',
           key: 3,
           icon: <DesktopOutlined />
+        },
+        {
+          label: '部门管理',
+          key: 4,
+          icon: <DesktopOutlined />
         }
       ]
     }
@@ -37,6 +42,9 @@ const SideMenu = () => {
     }
     if (key == '3') {
       location.href = '/userList'
+    }
+    if (key == '4') {
+      location.href = '/deptList'
     }
   }
   return (

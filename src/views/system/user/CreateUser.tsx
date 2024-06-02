@@ -87,6 +87,7 @@ const CreateUser = (props: ImodalProp) => {
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
+    setImage('')
     props.update
   }
   //回传数据到父组件
@@ -140,7 +141,7 @@ const CreateUser = (props: ImodalProp) => {
 
   return (
     <Modal
-      title='创建用户'
+      title={action === 'create' ? '创建用户' : '编辑用户'}
       okText='确定'
       cancelText='取消'
       width={800}
@@ -152,13 +153,27 @@ const CreateUser = (props: ImodalProp) => {
         <Form.Item name='userId' hidden>
           <Input placeholder='请输入用户名称'></Input>
         </Form.Item>
-        <Form.Item label='用户名称' name='userName' rules={[{ required: true, message: '请输入用户名称' }]}>
+        <Form.Item
+          label='用户名称'
+          name='userName'
+          rules={[
+            { required: true, message: '请输入用户名称' },
+            { min: 5, max: 12, message: '长度要在5-12个字符之间' }
+          ]}
+        >
           <Input placeholder='请输入用户名称'></Input>
         </Form.Item>
-        <Form.Item label='用户邮箱' name='userEmail' rules={[{ required: true, message: '请输入用户邮箱' }]}>
-          <Input placeholder='请输入用户邮箱'></Input>
+        <Form.Item label='用户邮箱' name='userEmail'>
+          <Input placeholder='请输入用户邮箱' disabled={action === 'edit'}></Input>
         </Form.Item>
-        <Form.Item label='手机号码' name='mobile'>
+        <Form.Item
+          label='手机号码'
+          name='mobile'
+          rules={[
+            { len: 11, max: 11, message: '请输入11位手机号' },
+            { pattern: /1[3-9]\d{9}/, message: '请输入正确手机号' }
+          ]}
+        >
           <Input type='number' placeholder='请输入手机号'></Input>
         </Form.Item>
         <Form.Item label='用户部门' name='deptId'>

@@ -3,30 +3,33 @@ import { AnyObject, PageParams, User } from '@/types/api'
 import { formatDate } from '@/utils'
 import { Button, Table, Form, Input, Select, Space, Modal, message } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import CreateUser from './CreateUser'
 import { IAction } from '@/types/modal'
+import { useAntdTable } from 'ahooks'
 
 export default function UserList() {
   const [form] = Form.useForm()
-  const [data, setData] = useState<AnyObject[]>([])
-  const [total, setTotal] = useState(0)
+
   const [newAdmin, setNewAdmin] = useState<AnyObject[]>([])
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10
-  })
+  const [userIds, setUserIds] = useState<number[]>([])
+  const [data, setData] = useState<AnyObject[]>([])
+  // const [total, setTotal] = useState(0)
+  // const [pagination, setPagination] = useState({
+  //   current: 1,
+  //   pageSize: 10
+  // })
   const userRef = useRef<{
     open: (type: IAction, data?: User.UserItem) => void | undefined
   }>()
   const useAdminRef = useRef(newAdmin)
-  useEffect(() => {
-    getUserList({
-      pageNum: pagination.current,
-      pageSize: pagination.pageSize
-    })
-  }, [pagination.current, pagination.pageSize])
-  console.log(useAdminRef.current)
+  // useEffect(() => {
+  //   getUserList({
+  //     pageNum: pagination.current,
+  //     pageSize: pagination.pageSize
+  //   })
+  // }, [pagination.current, pagination.pageSize])
+  // console.log(useAdminRef.current)
 
   //手动更新列表数据
   // useEffect(() => {
@@ -34,28 +37,48 @@ export default function UserList() {
   //   setData(data => [...data, useAdminRef.current[0]])
   // }, [newAdmin])
 
-  //获取用户列表
-  const getUserList = async (params: PageParams) => {
-    const values = form.getFieldsValue()
-    const data = await api.getUserList({
-      ...values,
-      pageNum: params.pageNum,
-      pageSize: params.pageSize
-    })
-    // console.log('data', data)
-    // const list = Array.from({ length: 3 })
-    //   .fill({})
-    //   .map((item: any) => {
-    //     ;(item = { ...data.list[0] }), (item.userId = Math.random())
-    //     return item
-    //   })
-    setData(data.list)
-    setTotal(data.list.length)
-    // setPagination({
-    //   current: data.page.pageNum,
-    //   pageSize: data.page.pageSize
-    // })
+  //ahooks
+  const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, formData: User.Params) => {
+    return api
+      .getUserList({
+        ...formData,
+        pageNum: current,
+        pageSize: pageSize
+      })
+      .then(data => {
+        return {
+          total: data.page.total,
+          list: data.list
+        }
+      })
   }
+
+  const { tableProps, search } = useAntdTable(getTableData, {
+    form
+  })
+
+  //获取用户列表
+  // const getUserList = async (params: PageParams) => {
+  //   const values = form.getFieldsValue()
+  //   const data = await api.getUserList({
+  //     ...values,
+  //     pageNum: params.pageNum,
+  //     pageSize: params.pageSize
+  //   })
+  //   // console.log('data', data)
+  //   // const list = Array.from({ length: 3 })
+  //   //   .fill({})
+  //   //   .map((item: any) => {
+  //   //     ;(item = { ...data.list[0] }), (item.userId = Math.random())
+  //   //     return item
+  //   //   })
+  //   setData(data.list)
+  //   setTotal(data.list.length)
+  //   // setPagination({
+  //   //   current: data.page.pageNum,
+  //   //   pageSize: data.page.pageSize
+  //   // })
+  // }
 
   const handleDataFromChild = (data: AnyObject[]) => {
     // 这个函数会被子组件调用来传递数据
@@ -66,18 +89,15 @@ export default function UserList() {
   const handleClick = (num: number) => {
     //搜索
     if (num === 1) {
-      getUserList({
-        pageNum: 1,
-        pageSize: pagination.pageSize
-      })
+      search.submit()
     }
     //重置表单
     if (num === 2) {
-      form.resetFields()
-      getUserList({
-        pageNum: 1,
-        pageSize: pagination.pageSize
-      })
+      search.reset()
+      // getUserList({
+      //   pageNum: 1,
+      //   pageSize: pagination.pageSize
+      // })
     }
   }
 
@@ -100,19 +120,31 @@ export default function UserList() {
     })
   }
 
+  //批量删除确认
+  const handlePatchConfig = () => {
+    if (userIds.length === 0) {
+      message.error('请选择要删除的用户')
+    }
+    Modal.confirm({
+      title: '删除确认',
+      content: <span>确认删除该批用户吗</span>,
+      onOk: () => {
+        handleUserDelSubmit(userIds)
+      }
+    })
+  }
+
   //公共删除用户接口
   const handleUserDelSubmit = async (ids: number[]) => {
     try {
       await api.delUser({ userIds: ids })
       message.success('删除成功')
-      getUserList({
-        pageNum: 1,
-        pageSize: pagination.pageSize
-      })
+      setUserIds([])
+      search.reset()
     } catch (error) {}
   }
 
-  const columns: ColumnsType<User.UserItem> = [
+  const columns: ColumnsType<AnyObject> = [
     {
       title: '用户ID',
       dataIndex: 'userId',
@@ -217,7 +249,7 @@ export default function UserList() {
               <Button type='primary' onClick={handleCreate}>
                 新增
               </Button>
-              <Button type='primary' danger>
+              <Button type='primary' danger onClick={handlePatchConfig}>
                 批量删除
               </Button>
             </Space>
@@ -226,35 +258,39 @@ export default function UserList() {
         <Table
           bordered
           rowKey='userId'
-          rowSelection={{ type: 'checkbox' }}
-          dataSource={data}
-          columns={columns}
-          pagination={{
-            position: ['bottomRight'],
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            showTotal: function (total) {
-              return `总共${total}条`
-            },
-            onChange: (page, pageSize) => {
-              setPagination({
-                current: page,
-                pageSize
-              })
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys: userIds,
+            onChange: (selectedRowKeys: React.Key[]) => {
+              setUserIds(selectedRowKeys as number[])
             }
           }}
+          columns={columns}
+          {...tableProps}
+          // dataSource={data}
+          // pagination={{
+          //   position: ['bottomRight'],
+          //   current: pagination.current,
+          //   pageSize: pagination.pageSize,
+          //   showQuickJumper: true,
+          //   showSizeChanger: true,
+          //   showTotal: function (total) {
+          //     return `总共${total}条`
+          //   },
+          //   onChange: (page, pageSize) => {
+          //     setPagination({
+          //       current: page,
+          //       pageSize
+          //     })
+          //   }
+          // }}
         />
         ;
       </div>
       <CreateUser
         mRef={userRef}
         update={() => {
-          getUserList({
-            pageNum: 1,
-            pageSize: pagination.pageSize
-          })
+          search.reset()
         }}
         onDataReceived={handleDataFromChild}
       />

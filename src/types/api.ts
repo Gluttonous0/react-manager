@@ -35,6 +35,7 @@ export namespace Logins {
   }
 }
 export type AnyObject = Record<string, any>
+
 export namespace User {
   export interface Params extends PageParams {
     userId?: number
@@ -78,6 +79,21 @@ export namespace User {
   }
   export interface EditParams extends CreateParams {
     userId: number
+  }
+}
+
+export namespace Dept {
+  export interface Params {
+    deptName?: string
+  }
+  export interface DeptItem {
+    id: string
+    createTime: string
+    updateTime: string
+    deptName: string
+    parentId: string
+    userName: string
+    children: DeptItem[]
   }
 }
 
