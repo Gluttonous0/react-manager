@@ -60,7 +60,7 @@ instance.interceptors.response.use(
     return data.data
   },
   error => {
-    console.log('error')
+    console.log('error', error)
     hideLoading()
     message.error(error.msg)
     return Promise.reject(error.msg)

@@ -6,5 +6,5 @@ export type DataFromChild = string | number | object[]
 export interface ImodalProp {
   mRef: MutableRefObject<{ open: (type: IAction, data: User.UserItem) => void } | undefined>
   update: () => void
-  onDataReceived: (data: AnyObject[]) => void
+  // onDataReceived: (data: AnyObject[]) => void
 }

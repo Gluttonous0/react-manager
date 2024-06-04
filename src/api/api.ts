@@ -48,7 +48,7 @@ export default {
   },
   //部门管理
   //部门列表
-  getDeptList(params: Dept.Params) {
+  getDeptList(params?: Dept.Params) {
     return request.get<Dept.DeptItem[]>('/dept/list', params)
   }
 }
