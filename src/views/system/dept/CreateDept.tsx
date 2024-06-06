@@ -1,7 +1,7 @@
 import api from '@/api/api'
-import { Dept } from '@/types/api'
+import { Dept, User } from '@/types/api'
 import { IAction, ImodalProp } from '@/types/modal'
-import { Form, Input, Modal, Select, TreeSelect } from 'antd'
+import { Form, Input, Modal, Select, TreeSelect, message } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { useEffect, useImperativeHandle, useState } from 'react'
 
@@ -10,19 +10,40 @@ export default function CreateDept(props: ImodalProp) {
   const [action, setAction] = useState<IAction>('create')
   const [visible, setVisible] = useState(false)
   const [deptList, setDeptList] = useState<Dept.DeptItem[]>([])
+  const [temporaryDeptList, setTemporaryDeptList] = useState<Dept.DeptItem[]>([])
+  const [usersAllList, setUsersAllList] = useState<User.UserItem[]>([])
+  console.log('createindex:', deptList)
 
   useEffect(() => {
     getDeptList()
+    getAllUserList()
   }, [])
+
+  //useEffect监听回传数据
+  useEffect(() => {
+    sendDataToParent()
+  }, [temporaryDeptList])
+  //回传数据到父组件
+  const sendDataToParent = () => {
+    props.onDataReceived(temporaryDeptList, 0)
+    console.log('提交父组件', temporaryDeptList)
+  }
 
   //获取部门列表
   const getDeptList = async () => {
     const data = await api.getDeptList()
-    setDeptList(data)
+    if (temporaryDeptList) {
+      setDeptList([...data, ...temporaryDeptList])
+    } else {
+      setDeptList(data)
+    }
   }
 
   //获取所有用户列表列表
-  const getAllUserList = () => {}
+  const getAllUserList = async () => {
+    const data = await api.getAllUserList()
+    setUsersAllList(data)
+  }
 
   //弹窗暴露
   useImperativeHandle(props.mRef, () => ({
@@ -38,12 +59,45 @@ export default function CreateDept(props: ImodalProp) {
   }
 
   //提交表单
-  const handleSubmit = () => {}
-  //取消表单
+  const handleSubmit = async () => {
+    const vaild = await form.validateFields()
+    if (vaild) {
+      if (action === 'create') {
+        let newData = form.getFieldsValue()
+        let arrData = {
+          createId: Math.random().toString(),
+          createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
+          updateTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
+          id: Math.random().toString()
+        }
+        newData = { ...newData, ...arrData }
+        console.log('object', newData)
+        await api.createDept(newData)
+        if (temporaryDeptList) {
+          setTemporaryDeptList([...temporaryDeptList, newData])
+        } else {
+          setTemporaryDeptList(newData)
+        }
+      } else {
+        console.log(form.getFieldsValue())
+        await api.editDept(form.getFieldsValue())
+        const editData = form.getFieldsValue()
+        let deptsList = [...deptList, ...temporaryDeptList]
+        // let newDeptsList = deptsList.map(item=>{
+        //   if(item.id === editData.id)
+        // })
+      }
+      message.success('操作成功')
+      handleCancel()
+      props.update()
+    }
+  }
+  //关闭和重置弹框表单
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
   }
+
   return (
     <Modal
       title={action === 'create' ? '创建部门' : '编辑部门'}
@@ -64,14 +118,18 @@ export default function CreateDept(props: ImodalProp) {
             treeData={deptList}
           />
         </Form.Item>
-        <Form.Item label='部门名称' name='deptName'>
+        <Form.Item label='部门名称' name='deptName' rules={[{ required: true, message: '请输入部门名称' }]}>
           <Input placeholder='请输入部门名称' />
         </Form.Item>
-        <Form.Item label='负责人' name='userName'>
+        <Form.Item label='负责人' name='userName' rules={[{ required: true, message: '请选择负责人' }]}>
           <Select>
-            <Select.Option value='jack' key='jack'>
-              jack
-            </Select.Option>
+            {usersAllList.map(item => {
+              return (
+                <Select.Option value={item.userName} key={item.id}>
+                  {item.userName}
+                </Select.Option>
+              )
+            })}
           </Select>
         </Form.Item>
       </Form>

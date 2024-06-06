@@ -21,21 +21,21 @@ const config = {
     uploadApi: 'http://api-driver-dev.marsview.cc',
     cdn: 'http://xxx.aliyun.com',
     mock: true,
-    mockApi: 'https://mock.apifox.com/m1/4361209-4005003-default/api'
+    mockApi: 'https://mock.apifox.cn/m1/4361209-4005003-default/api'
   },
   stg: {
     baseApi: '/api',
     uploadApi: 'http://api-driver-stg.marsview.cc',
     cdn: 'http://xxx.aliyun.com',
     mock: false,
-    mockApi: 'https://mock.apifox.com/m1/4361209-4005003-default/api'
+    mockApi: 'https://mock.apifox.cn/m1/4361209-4005003-default/api'
   },
   prd: {
     baseApi: '/api',
     uploadApi: 'http://api-driver.marsview.cc',
     cdn: 'http://xxx.aliyun.com',
     mock: false,
-    mockApi: 'https://mock.apifox.com/m1/4361209-4005003-default/api'
+    mockApi: 'https://mock.apifox.cn/m1/4361209-4005003-default/api'
   }
 }
 

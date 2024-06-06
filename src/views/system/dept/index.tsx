@@ -11,6 +11,7 @@ import { ColumnsType } from 'antd/es/table'
 export default function DeptList() {
   const [form] = useForm()
   const [data, setData] = useState<Dept.DeptItem[]>([])
+  const [temporarydata, setTemporaryData] = useState<Dept.DeptItem[]>([])
   const deptRef = useRef<{
     open: (type: IAction, data?: Dept.EditParams | { parentId: string }) => void
   }>()
@@ -18,6 +19,19 @@ export default function DeptList() {
   useEffect(() => {
     getDeptList()
   }, [])
+
+  useEffect(() => {
+    getDeptList()
+  }, [temporarydata])
+  // 这个函数会被子组件调用来传递数据
+  const handleDataFromChild = (data: any, num: number) => {
+    if (num === 0) {
+      setTemporaryData(data)
+    }
+    if (num === 1) {
+      setData(data)
+    }
+  }
 
   //自定义express接口返回部门数据
   const getDeptList1 = async (searchData?: any) => {
@@ -36,8 +50,10 @@ export default function DeptList() {
   //调用apifox接口返回部门数据
   const getDeptList = async () => {
     const data = await api.getDeptList(form.getFieldsValue())
-    setData(data)
+    setData([...data, ...temporarydata])
   }
+  //编辑更新列表
+  const editDeptList = () => {}
 
   //重置按钮
   const handleReset = () => {
@@ -95,6 +111,7 @@ export default function DeptList() {
       }
     }
   ]
+
   return (
     <div>
       <Form className='search_form' layout='inline' form={form}>
@@ -121,7 +138,7 @@ export default function DeptList() {
         </div>
         <Table bordered rowKey='id' columns={columns} dataSource={data} pagination={false} />
       </div>
-      <CreateDept mRef={deptRef} update={getDeptList} />
+      <CreateDept mRef={deptRef} update={getDeptList} onDataReceived={handleDataFromChild} />
     </div>
   )
 }
