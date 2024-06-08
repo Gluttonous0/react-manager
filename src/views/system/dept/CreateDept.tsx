@@ -11,8 +11,8 @@ export default function CreateDept(props: ImodalProp) {
   const [visible, setVisible] = useState(false)
   const [deptList, setDeptList] = useState<Dept.DeptItem[]>([])
   const [temporaryDeptList, setTemporaryDeptList] = useState<Dept.DeptItem[]>([])
+  const [editDeptList, setEditDeptList] = useState<Dept.DeptItem[]>([])
   const [usersAllList, setUsersAllList] = useState<User.UserItem[]>([])
-  console.log('createindex:', deptList)
 
   useEffect(() => {
     getDeptList()
@@ -21,12 +21,19 @@ export default function CreateDept(props: ImodalProp) {
 
   //useEffect监听回传数据
   useEffect(() => {
-    sendDataToParent()
+    sendDataToParent(0)
   }, [temporaryDeptList])
+  useEffect(() => {
+    sendDataToParent(1)
+  }, [editDeptList])
   //回传数据到父组件
-  const sendDataToParent = () => {
-    props.onDataReceived(temporaryDeptList, 0)
-    console.log('提交父组件', temporaryDeptList)
+  const sendDataToParent = (num: number) => {
+    if (num === 0) {
+      props.onDataReceived(temporaryDeptList, num)
+    }
+    if (num === 1) {
+      props.onDataReceived(editDeptList, num)
+    }
   }
 
   //获取部门列表
@@ -83,9 +90,13 @@ export default function CreateDept(props: ImodalProp) {
         await api.editDept(form.getFieldsValue())
         const editData = form.getFieldsValue()
         let deptsList = [...deptList, ...temporaryDeptList]
-        // let newDeptsList = deptsList.map(item=>{
-        //   if(item.id === editData.id)
-        // })
+        let newEditDept = deptsList
+          .filter(item => item.id === editData.id)
+          .map(item => {
+            return { ...item, ...editData }
+          })
+        console.log(newEditDept)
+        setEditDeptList(newEditDept)
       }
       message.success('操作成功')
       handleCancel()
@@ -109,6 +120,9 @@ export default function CreateDept(props: ImodalProp) {
       onCancel={handleCancel}
     >
       <Form form={form} labelAlign='right' labelCol={{ span: 3 }}>
+        <Form.Item label='部门ID' name='id' hidden={true}>
+          <Input />
+        </Form.Item>
         <Form.Item label='上级部门' name='parentId'>
           <TreeSelect
             placeholder='请选择上级部门'

@@ -12,6 +12,7 @@ export default function DeptList() {
   const [form] = useForm()
   const [data, setData] = useState<Dept.DeptItem[]>([])
   const [temporarydata, setTemporaryData] = useState<Dept.DeptItem[]>([])
+  const [editDeptdata, setEditDeptData] = useState<Dept.DeptItem[]>([])
   const deptRef = useRef<{
     open: (type: IAction, data?: Dept.EditParams | { parentId: string }) => void
   }>()
@@ -22,14 +23,20 @@ export default function DeptList() {
 
   useEffect(() => {
     getDeptList()
-  }, [temporarydata])
+  }, [editDeptdata, temporarydata])
   // 这个函数会被子组件调用来传递数据
-  const handleDataFromChild = (data: any, num: number) => {
+  const handleDataFromChild = (datas: any, num: number) => {
     if (num === 0) {
-      setTemporaryData(data)
+      setTemporaryData(datas)
     }
     if (num === 1) {
-      setData(data)
+      datas = datas[0]
+      data.forEach((item, index) => {
+        if (item.id === datas.id) {
+          data[index] = { ...item, ...datas }
+        }
+      })
+      setEditDeptData(data)
     }
   }
 
@@ -50,10 +57,12 @@ export default function DeptList() {
   //调用apifox接口返回部门数据
   const getDeptList = async () => {
     const data = await api.getDeptList(form.getFieldsValue())
-    setData([...data, ...temporarydata])
+    if (editDeptdata.length != 0) {
+      setData(editDeptdata)
+    } else {
+      setData([...data, ...temporarydata])
+    }
   }
-  //编辑更新列表
-  const editDeptList = () => {}
 
   //重置按钮
   const handleReset = () => {
@@ -68,10 +77,17 @@ export default function DeptList() {
 
   //编辑部门
   const handleEdit = (record: Dept.DeptItem) => {
+    console.log(record)
     deptRef.current?.open('edit', record)
   }
 
   const columns: ColumnsType<Dept.DeptItem> = [
+    {
+      title: '部门ID',
+      dataIndex: 'id',
+      key: 'id',
+      hidden: true
+    },
     {
       title: '部门名称',
       dataIndex: 'deptName',
