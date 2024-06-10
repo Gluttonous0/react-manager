@@ -1,4 +1,5 @@
 import api from '@/api/api'
+import { useDeptStore } from '@/store'
 import { Dept, User } from '@/types/api'
 import { IAction, ImodalProp } from '@/types/modal'
 import { Form, Input, Modal, Select, TreeSelect, message } from 'antd'
@@ -14,36 +15,42 @@ export default function CreateDept(props: ImodalProp) {
   const [editDeptList, setEditDeptList] = useState<Dept.DeptItem[]>([])
   const [usersAllList, setUsersAllList] = useState<User.UserItem[]>([])
 
+  //设置临时储存zustand
+  const deptStore = useDeptStore(state => state.deptList)
+  const updateStore = useDeptStore(state => state.updateList)
+
   useEffect(() => {
     getDeptList()
     getAllUserList()
   }, [])
 
-  //useEffect监听回传数据
-  useEffect(() => {
-    sendDataToParent(0)
-  }, [temporaryDeptList])
-  useEffect(() => {
-    sendDataToParent(1)
-  }, [editDeptList])
-  //回传数据到父组件
-  const sendDataToParent = (num: number) => {
-    if (num === 0) {
-      props.onDataReceived(temporaryDeptList, num)
-    }
-    if (num === 1) {
-      props.onDataReceived(editDeptList, num)
-    }
-  }
+  // //useEffect监听回传数据
+  // useEffect(() => {
+  //   sendDataToParent(0)
+  // }, [temporaryDeptList])
+  // useEffect(() => {
+  //   sendDataToParent(1)
+  // }, [editDeptList])
+  // //回传数据到父组件
+  // const sendDataToParent = (num: number) => {
+  //   if (num === 0) {
+  //     props.onDataReceived(temporaryDeptList, num)
+  //   }
+  //   if (num === 1) {
+  //     props.onDataReceived(editDeptList, num)
+  //   }
+  // }
 
   //获取部门列表
   const getDeptList = async () => {
-    const data = await api.getDeptList()
-    if (temporaryDeptList) {
-      setDeptList([...data, ...temporaryDeptList])
-    } else {
-      setDeptList(data)
-    }
+    await api.getDeptList()
+
+    setDeptList(deptStore)
+    // if (temporaryDeptList) {
+    //   setDeptList([...data, ...temporaryDeptList])
+    // } else {
+    //   setDeptList(data)
+    // }
   }
 
   //获取所有用户列表列表
@@ -71,6 +78,10 @@ export default function CreateDept(props: ImodalProp) {
     if (vaild) {
       if (action === 'create') {
         let newData = form.getFieldsValue()
+        if (!newData.parentId) {
+          newData.parentId = ''
+        }
+        let updateList = deptList
         let arrData = {
           createId: Math.random().toString(),
           createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
@@ -78,25 +89,33 @@ export default function CreateDept(props: ImodalProp) {
           id: Math.random().toString()
         }
         newData = { ...newData, ...arrData }
-        console.log('object', newData)
+        updateList.push(newData)
+        console.log(newData);
+        console.log('updateList', updateList);
+        updateStore(updateList)
+        console.log('deptStore', deptStore);
         await api.createDept(newData)
-        if (temporaryDeptList) {
-          setTemporaryDeptList([...temporaryDeptList, newData])
-        } else {
-          setTemporaryDeptList(newData)
-        }
+        // updateStore(updateData)
+        // if (temporaryDeptList) {
+        //   setTemporaryDeptList([...temporaryDeptList, newData])
+        // } else {
+        //   setTemporaryDeptList(newData)
+        // }
       } else {
         console.log(form.getFieldsValue())
         await api.editDept(form.getFieldsValue())
         const editData = form.getFieldsValue()
-        let deptsList = [...deptList, ...temporaryDeptList]
-        let newEditDept = deptsList
-          .filter(item => item.id === editData.id)
-          .map(item => {
+        // let deptsList = [...deptList, ...temporaryDeptList]
+        let deptsList = deptStore
+        let newEditDept = deptsList.map(item => {
+          if (item.id === editData.id) {
             return { ...item, ...editData }
-          })
+          } else {
+            return item
+          }
+        })
         console.log(newEditDept)
-        setEditDeptList(newEditDept)
+        updateStore(newEditDept)
       }
       message.success('操作成功')
       handleCancel()

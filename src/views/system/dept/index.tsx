@@ -7,6 +7,7 @@ import api from '@/api/api'
 import CreateDept from './CreateDept'
 import { IAction } from '@/types/modal'
 import { ColumnsType } from 'antd/es/table'
+import { useDeptStore } from '@/store'
 
 export default function DeptList() {
   const [form] = useForm()
@@ -16,52 +17,74 @@ export default function DeptList() {
   const deptRef = useRef<{
     open: (type: IAction, data?: Dept.EditParams | { parentId: string }) => void
   }>()
+
+  //设置临时储存zustand
+  const deptStore = useDeptStore(state => state.deptList)
+  const updateStore = useDeptStore(state => state.updateList)
+  const collapsed = useDeptStore(state => state.collapsed)
+  const updatecollapsed = useDeptStore(state => state.updateCollapsed)
+  console.log('data', data);
+  console.log('原始缓存', deptStore);
   //列表初始化调用接口
   useEffect(() => {
     getDeptList()
   }, [])
 
-  useEffect(() => {
-    getDeptList()
-  }, [editDeptdata, temporarydata])
-  // 这个函数会被子组件调用来传递数据
-  const handleDataFromChild = (datas: any, num: number) => {
-    if (num === 0) {
-      setTemporaryData(datas)
-    }
-    if (num === 1) {
-      datas = datas[0]
-      data.forEach((item, index) => {
-        if (item.id === datas.id) {
-          data[index] = { ...item, ...datas }
-        }
-      })
-      setEditDeptData(data)
-    }
-  }
+  // useEffect(() => {
+  //   setData(deptStore)
+  // }, [data])
+  // 这个函数会被子组件调用来传递数据 
+  // const handleDataFromChild = (datas: any, num: number) => {
+  //   if (num === 0) {
+  //     setTemporaryData(datas)
+  //   }
+  //   if (num === 1) {
+  //     datas = datas[0]
+  //     data.forEach((item, index) => {
+  //       if (item.id === datas.id) {
+  //         data[index] = { ...item, ...datas }
+  //       }
+  //     })
+  //     setEditDeptData(data)
+  //   }
+  // }
 
   //自定义express接口返回部门数据
-  const getDeptList1 = async (searchData?: any) => {
-    console.log(searchData)
-    try {
-      const data = await (await axios.get('http://localhost:5000/api/dept/list', { params: searchData })).data.data
-      console.log('data:', data)
-      // if (!data) {
-      //   setData([])
-      // }
-      setData(data)
-    } catch (error) {
-      console.error('Error sending request:', error)
-    }
-  }
+  // const getDeptList1 = async (searchData?: any) => {
+  //   console.log(searchData)
+  //   try {
+  //     const data = await (await axios.get('http://localhost:5000/api/dept/list', { params: searchData })).data.data
+  //     console.log('data:', data)
+  //     // if (!data) {
+  //     //   setData([])
+  //     // }
+  //     setData(data)
+  //   } catch (error) {
+  //     console.error('Error sending request:', error)
+  //   }
+  // }
   //调用apifox接口返回部门数据
   const getDeptList = async () => {
     const data = await api.getDeptList(form.getFieldsValue())
-    if (editDeptdata.length != 0) {
-      setData(editDeptdata)
+    console.log(collapsed);
+    console.log('indexDeptStore', deptStore);
+
+    if (collapsed) {
+      updateStore(deptStore)
+      setData(deptStore)
+      console.log('更新临时缓存');
     } else {
-      setData([...data, ...temporarydata])
+      updateStore(data)
+      setData(data)
+      updatecollapsed()
+      console.log('初始化列表');
     }
+
+    // if (editDeptdata.length != 0) {
+    //   setData(editDeptdata)
+    // } else {
+    //   setData([...data, ...temporarydata])
+    // }
   }
 
   //重置按钮
@@ -154,7 +177,9 @@ export default function DeptList() {
         </div>
         <Table bordered rowKey='id' columns={columns} dataSource={data} pagination={false} />
       </div>
-      <CreateDept mRef={deptRef} update={getDeptList} onDataReceived={handleDataFromChild} />
+      <CreateDept mRef={deptRef} update={getDeptList}
+      // onDataReceived={handleDataFromChild} 
+      />
     </div>
   )
 }

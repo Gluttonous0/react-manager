@@ -1,6 +1,6 @@
 import resso from 'resso'
 import { create } from 'zustand'
-import { User } from '@/types/api'
+import { Dept, User } from '@/types/api'
 
 const store = resso({
   token: '',
@@ -47,5 +47,22 @@ export const useBearStore = create<{
       userInfo
     })
 }))
+
+
+export const useDeptStore = create<{
+  deptList: any[]
+  updateList: (deptList: any[]) => void,
+  collapsed: boolean,
+  updateCollapsed: () => void
+}>(set => ({
+  deptList: [],
+  collapsed: false,
+  updateCollapsed: () => set(state => ({ collapsed: !state.collapsed })),
+  updateList: (deptList: any[]) => set({ deptList })
+}))
+
+
+
+
 
 export default store
