@@ -1,10 +1,11 @@
 import api from '@/api/api'
-import { useDeptStore } from '@/store'
+// import { useDeptStore } from '@/store'
 import { Dept, User } from '@/types/api'
 import { IAction, ImodalProp } from '@/types/modal'
 import { Form, Input, Modal, Select, TreeSelect, message } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { useEffect, useImperativeHandle, useState } from 'react'
+import storage from '@/utils/storage'
 
 export default function CreateDept(props: ImodalProp) {
   const [form] = useForm()
@@ -16,8 +17,8 @@ export default function CreateDept(props: ImodalProp) {
   const [usersAllList, setUsersAllList] = useState<User.UserItem[]>([])
 
   //设置临时储存zustand
-  const deptStore = useDeptStore(state => state.deptList)
-  const updateStore = useDeptStore(state => state.updateList)
+  // const deptStore = useDeptStore(state => state.deptList)
+  // const updateStore = useDeptStore(state => state.updateList)
 
   useEffect(() => {
     getDeptList()
@@ -44,8 +45,8 @@ export default function CreateDept(props: ImodalProp) {
   //获取部门列表
   const getDeptList = async () => {
     await api.getDeptList()
-
-    setDeptList(deptStore)
+    // const data = storage.get('deptList')
+    setDeptList(storage.get('deptList'))
     // if (temporaryDeptList) {
     //   setDeptList([...data, ...temporaryDeptList])
     // } else {
@@ -67,7 +68,7 @@ export default function CreateDept(props: ImodalProp) {
   const open = (type: IAction, data?: Dept.EditParams | { parentId: string }) => {
     setAction(type)
     setVisible(true)
-    if (type === 'edit' && data) {
+    if (data) {
       form.setFieldsValue(data)
     }
   }
@@ -78,23 +79,27 @@ export default function CreateDept(props: ImodalProp) {
     if (vaild) {
       if (action === 'create') {
         let newData = form.getFieldsValue()
-        if (!newData.parentId) {
-          newData.parentId = ''
-        }
-        let updateList = deptList
+        let updateList = storage.get('deptList')
         let arrData = {
           createId: Math.random().toString(),
           createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
           updateTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
-          id: Math.random().toString()
+          id: Math.random().toString(),
+          children: []
         }
-        newData = { ...newData, ...arrData }
-        updateList.push(newData)
-        console.log(newData);
-        console.log('updateList', updateList);
-        updateStore(updateList)
-        console.log('deptStore', deptStore);
-        await api.createDept(newData)
+        const newsData = { ...newData, ...arrData }
+        console.log(updateList)
+        console.log(newsData)
+        if (!newData.parentId) {
+          newData.parentId = ''
+          updateList.push(newsData)
+          storage.set('deptList', updateList)
+          setDeptList(updateList)
+          await api.createDept(newsData)
+        }
+
+        // updateStore(updateList)
+        // console.log('deptStore', deptStore)
         // updateStore(updateData)
         // if (temporaryDeptList) {
         //   setTemporaryDeptList([...temporaryDeptList, newData])
@@ -106,8 +111,8 @@ export default function CreateDept(props: ImodalProp) {
         await api.editDept(form.getFieldsValue())
         const editData = form.getFieldsValue()
         // let deptsList = [...deptList, ...temporaryDeptList]
-        let deptsList = deptStore
-        let newEditDept = deptsList.map(item => {
+        let deptsList = storage.get('deptList')
+        let newEditDept = deptsList.map((item: any) => {
           if (item.id === editData.id) {
             return { ...item, ...editData }
           } else {
@@ -115,9 +120,10 @@ export default function CreateDept(props: ImodalProp) {
           }
         })
         console.log(newEditDept)
-        updateStore(newEditDept)
+        storage.set('deptList', newEditDept)
+        // updateStore(newEditDept)
       }
-      message.success('操作成功')
+      // message.success('操作成功')
       handleCancel()
       props.update()
     }

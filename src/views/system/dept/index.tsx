@@ -1,6 +1,5 @@
-import { Button, Form, Input, Space, Table } from 'antd'
+import { Button, Form, Input, Modal, Space, Table } from 'antd'
 import { useForm } from 'antd/es/form/Form'
-import axios from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import { Dept } from '@/types/api'
 import api from '@/api/api'
@@ -8,6 +7,7 @@ import CreateDept from './CreateDept'
 import { IAction } from '@/types/modal'
 import { ColumnsType } from 'antd/es/table'
 import { useDeptStore } from '@/store'
+import storage from '@/utils/storage'
 
 export default function DeptList() {
   const [form] = useForm()
@@ -18,13 +18,16 @@ export default function DeptList() {
     open: (type: IAction, data?: Dept.EditParams | { parentId: string }) => void
   }>()
 
-  //设置临时储存zustand
-  const deptStore = useDeptStore(state => state.deptList)
-  const updateStore = useDeptStore(state => state.updateList)
-  const collapsed = useDeptStore(state => state.collapsed)
-  const updatecollapsed = useDeptStore(state => state.updateCollapsed)
-  console.log('data', data);
-  console.log('原始缓存', deptStore);
+  // //设置临时储存zustand
+  // const deptStore = useDeptStore(state => state.deptList)
+  // const updateStore = useDeptStore(state => state.updateList)
+  // const collapsed = useDeptStore(state => state.collapsed)
+  // const updatecollapsed = useDeptStore(state => state.updateCollapsed)
+  // console.log('data', data)
+  // console.log('原始缓存', deptStore)
+
+  //设置储存
+
   //列表初始化调用接口
   useEffect(() => {
     getDeptList()
@@ -33,7 +36,7 @@ export default function DeptList() {
   // useEffect(() => {
   //   setData(deptStore)
   // }, [data])
-  // 这个函数会被子组件调用来传递数据 
+  // 这个函数会被子组件调用来传递数据
   // const handleDataFromChild = (datas: any, num: number) => {
   //   if (num === 0) {
   //     setTemporaryData(datas)
@@ -66,18 +69,20 @@ export default function DeptList() {
   //调用apifox接口返回部门数据
   const getDeptList = async () => {
     const data = await api.getDeptList(form.getFieldsValue())
-    console.log(collapsed);
-    console.log('indexDeptStore', deptStore);
-
-    if (collapsed) {
-      updateStore(deptStore)
-      setData(deptStore)
-      console.log('更新临时缓存');
+    // console.log(collapsed)
+    // console.log('indexDeptStore', deptStore)
+    if (storage.get('deptList')) {
+      storage.set('deptList', storage.get('deptList'))
+      setData(storage.get('deptList'))
+      // updateStore(deptStore)
+      // setData(deptStore)
+      console.log('更新临时缓存')
     } else {
-      updateStore(data)
+      storage.set('deptList', data)
       setData(data)
-      updatecollapsed()
-      console.log('初始化列表');
+      // updateStore(data)
+      // updatecollapsed()
+      console.log('初始化列表')
     }
 
     // if (editDeptdata.length != 0) {
@@ -98,11 +103,29 @@ export default function DeptList() {
     deptRef.current?.open('create')
   }
 
+  //创建子级部门
+  const handleSubCreate = (id: string) => {
+    deptRef.current?.open('create', { parentId: id })
+  }
+
   //编辑部门
   const handleEdit = (record: Dept.DeptItem) => {
     console.log(record)
     deptRef.current?.open('edit', record)
   }
+
+  //删除部门
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: '确认',
+      content: '确认删除该部门吗?',
+      onOk() {
+        handleDeleteSumbit(id)
+      }
+    })
+  }
+  //删除部门接口
+  const handleDeleteSumbit = (id: string) => {}
 
   const columns: ColumnsType<Dept.DeptItem> = [
     {
@@ -140,11 +163,15 @@ export default function DeptList() {
       render(record) {
         return (
           <Space>
-            <Button type='text'>新增</Button>
+            <Button type='text' onClick={() => handleSubCreate(record.id)}>
+              新增
+            </Button>
             <Button type='text' onClick={() => handleEdit(record)}>
               编辑
             </Button>
-            <Button type='text'>删除</Button>
+            <Button type='text' onClick={() => handleDelete(record.id)}>
+              删除
+            </Button>
           </Space>
         )
       }
@@ -177,8 +204,10 @@ export default function DeptList() {
         </div>
         <Table bordered rowKey='id' columns={columns} dataSource={data} pagination={false} />
       </div>
-      <CreateDept mRef={deptRef} update={getDeptList}
-      // onDataReceived={handleDataFromChild} 
+      <CreateDept
+        mRef={deptRef}
+        update={getDeptList}
+        // onDataReceived={handleDataFromChild}
       />
     </div>
   )
