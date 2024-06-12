@@ -86,8 +86,8 @@ export namespace Dept {
   export interface Params {
     deptName?: string
   }
-  export interface DelParams{
-    id:string
+  export interface DelParams {
+    id: string
   }
   export interface DeptItem {
     id: string
@@ -105,6 +105,29 @@ export namespace Dept {
   }
   export interface EditParams extends CreateParams {
     id: string
+  }
+}
+
+export namespace Menu {
+  export interface Params {
+    menuName: string
+    menuState: number
+  }
+  export interface CreateParams {
+    menuName: string
+    icon?: string
+    menuType: number
+    menuState: number
+    menuCode?: string
+    parentId?: string
+    path?: string
+    component?: string
+  }
+  export interface MenuItem extends CreateParams {
+    id: string
+    createTime: string
+    button?: MenuItem[]
+    children?: MenuItem[]
   }
 }
 

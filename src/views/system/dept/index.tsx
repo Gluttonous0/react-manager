@@ -13,8 +13,6 @@ import { message, modal } from '@/utils/AntdGlobal'
 export default function DeptList() {
   const [form] = useForm()
   const [data, setData] = useState<Dept.DeptItem[]>([])
-  const [temporarydata, setTemporaryData] = useState<Dept.DeptItem[]>([])
-  const [editDeptdata, setEditDeptData] = useState<Dept.DeptItem[]>([])
   const deptRef = useRef<{
     open: (type: IAction, data?: Dept.EditParams | { parentId: string }) => void
   }>()
@@ -126,20 +124,20 @@ export default function DeptList() {
     })
   }
   //删除部门接口
-  const handleDeleteSumbit = async(id: string) => {
+  const handleDeleteSumbit = async (id: string) => {
     await api.deleteDept({
       id
     })
     let upData = [...data]
-    console.log(id);
-    console.log(upData);
+    console.log(id)
+    console.log(upData)
 
-    for (let i=0;i<upData.length;i++){
-      if(upData[i].id === id){
-        upData.splice(i,1)
+    for (let i = 0; i < upData.length; i++) {
+      if (upData[i].id === id) {
+        upData.splice(i, 1)
       }
-    }   
-    storage.set('deptList',upData)
+    }
+    storage.set('deptList', upData)
     setData(upData)
     message.success('删除成功')
     getDeptList()

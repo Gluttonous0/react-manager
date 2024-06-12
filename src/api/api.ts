@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { Dashboard, Logins, ResultData, User, AnyObject, Dept } from '@/types/api'
+import { Dashboard, Logins, ResultData, User, AnyObject, Dept, Menu } from '@/types/api'
 
 export default {
   //登录
@@ -64,7 +64,11 @@ export default {
     return request.post('dept/edit', params)
   },
   //删除部门
-  deleteDept(params:Dept.DelParams) {
+  deleteDept(params: Dept.DelParams) {
     return request.post('dept/delete', params)
+  },
+  //菜单管理
+  getMenuList(params?: Menu.Params) {
+    return request.get<Menu.MenuItem[]>('/menu/list', params)
   }
 }
