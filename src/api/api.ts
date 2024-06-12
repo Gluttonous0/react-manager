@@ -62,5 +62,9 @@ export default {
   //修改部门
   editDept(params: Dept.CreateParams) {
     return request.post('dept/edit', params)
+  },
+  //删除部门
+  deleteDept(params:Dept.DelParams) {
+    return request.post('dept/delete', params)
   }
 }

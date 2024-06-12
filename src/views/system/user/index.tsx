@@ -292,7 +292,7 @@ export default function UserList() {
         update={() => {
           search.reset()
         }}
-        onDataReceived={handleDataFromChild}
+        // onDataReceived={handleDataFromChild}
       />
     </div>
   )

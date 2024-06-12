@@ -8,6 +8,7 @@ import { IAction } from '@/types/modal'
 import { ColumnsType } from 'antd/es/table'
 import { useDeptStore } from '@/store'
 import storage from '@/utils/storage'
+import { message, modal } from '@/utils/AntdGlobal'
 
 export default function DeptList() {
   const [form] = useForm()
@@ -116,16 +117,33 @@ export default function DeptList() {
 
   //删除部门
   const handleDelete = (id: string) => {
-    Modal.confirm({
+    modal.confirm({
       title: '确认',
-      content: '确认删除该部门吗?',
+      content: <span>确认删除该部门吗?</span>,
       onOk() {
         handleDeleteSumbit(id)
       }
     })
   }
   //删除部门接口
-  const handleDeleteSumbit = (id: string) => {}
+  const handleDeleteSumbit = async(id: string) => {
+    await api.deleteDept({
+      id
+    })
+    let upData = [...data]
+    console.log(id);
+    console.log(upData);
+
+    for (let i=0;i<upData.length;i++){
+      if(upData[i].id === id){
+        upData.splice(i,1)
+      }
+    }   
+    storage.set('deptList',upData)
+    setData(upData)
+    message.success('删除成功')
+    getDeptList()
+  }
 
   const columns: ColumnsType<Dept.DeptItem> = [
     {

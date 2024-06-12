@@ -92,7 +92,7 @@ const CreateUser = (props: ImodalProp) => {
   }
   //回传数据到父组件
   const sendDataToParent = () => {
-    props.onDataReceived(newAdmin)
+    // props.onDataReceived(newAdmin)
   }
 
   //上传之前,接口处理 base64处理本地储存照片

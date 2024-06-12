@@ -2,18 +2,17 @@ import api from '@/api/api'
 // import { useDeptStore } from '@/store'
 import { Dept, User } from '@/types/api'
 import { IAction, ImodalProp } from '@/types/modal'
-import { Form, Input, Modal, Select, TreeSelect, message } from 'antd'
+import { Form, Input, Modal, Select, TreeSelect } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { useEffect, useImperativeHandle, useState } from 'react'
 import storage from '@/utils/storage'
+import { message } from '@/utils/AntdGlobal'
 
 export default function CreateDept(props: ImodalProp) {
   const [form] = useForm()
   const [action, setAction] = useState<IAction>('create')
   const [visible, setVisible] = useState(false)
   const [deptList, setDeptList] = useState<Dept.DeptItem[]>([])
-  const [temporaryDeptList, setTemporaryDeptList] = useState<Dept.DeptItem[]>([])
-  const [editDeptList, setEditDeptList] = useState<Dept.DeptItem[]>([])
   const [usersAllList, setUsersAllList] = useState<User.UserItem[]>([])
 
   //设置临时储存zustand
@@ -21,7 +20,6 @@ export default function CreateDept(props: ImodalProp) {
   // const updateStore = useDeptStore(state => state.updateList)
 
   useEffect(() => {
-    getDeptList()
     getAllUserList()
   }, [])
 
@@ -66,6 +64,7 @@ export default function CreateDept(props: ImodalProp) {
   }))
   //打开弹框函数
   const open = (type: IAction, data?: Dept.EditParams | { parentId: string }) => {
+    getDeptList()
     setAction(type)
     setVisible(true)
     if (data) {
@@ -123,7 +122,7 @@ export default function CreateDept(props: ImodalProp) {
         storage.set('deptList', newEditDept)
         // updateStore(newEditDept)
       }
-      // message.success('操作成功')
+      message.success('操作成功')
       handleCancel()
       props.update()
     }

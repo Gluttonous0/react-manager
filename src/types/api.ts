@@ -86,6 +86,9 @@ export namespace Dept {
   export interface Params {
     deptName?: string
   }
+  export interface DelParams{
+    id:string
+  }
   export interface DeptItem {
     id: string
     createTime: string
