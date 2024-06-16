@@ -57,11 +57,11 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
           updateList.push(newsData)
           storage.set('menuList', updateList)
           setMenuList(updateList)
-          await api.createDept(newsData)
+          await api.createMenu(newsData)
         }
       } else {
         console.log(form.getFieldsValue())
-        await api.editDept(form.getFieldsValue())
+        await api.editMenu(form.getFieldsValue())
         const editData = form.getFieldsValue()
         let deptsList = storage.get('menuList')
         let newEditDept = deptsList.map((item: any) => {
@@ -141,7 +141,7 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
         <Form.Item label='组件名称' name='component'>
           <Input placeholder='请输入组件名称' />
         </Form.Item>
-        <Form.Item label='排序' name='component' tooltip={{ title: '排序值越大越靠后', icon: <InfoCircleOutlined /> }}>
+        <Form.Item label='排序' name='orderBy' tooltip={{ title: '排序值越大越靠后', icon: <InfoCircleOutlined /> }}>
           <InputNumber placeholder='请输入排序值' style={{ width: 120 }} />
         </Form.Item>
         <Form.Item label='菜单状态' name='menuState'>

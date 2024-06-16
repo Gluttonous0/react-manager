@@ -13,7 +13,7 @@ export default function MenuList() {
   const [form] = useForm()
   const [data, setData] = useState<Menu.MenuItem[]>([])
   const menuRef = useRef<{
-    open: (type: IAction, data?: Menu.EditParams | { parentId: string }) => void
+    open: (type: IAction, data?: Menu.EditParams | { parentId?: string; orderBy?: number }) => void
   }>()
 
   //列表初始化调用接口
@@ -43,7 +43,9 @@ export default function MenuList() {
 
   //创建部门
   const handleCreate = () => {
-    menuRef.current?.open('create')
+    menuRef.current?.open('create', {
+      orderBy: data.length
+    })
   }
 
   //创建子级部门

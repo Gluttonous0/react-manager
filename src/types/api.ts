@@ -129,6 +129,12 @@ export namespace Menu {
     button?: MenuItem[]
     children?: MenuItem[]
   }
+  export interface EditParams extends CreateParams {
+    id: string
+  }
+  export interface DelParams {
+    id: string
+  }
 }
 
 export namespace Dashboard {
