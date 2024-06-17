@@ -13,6 +13,8 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
   const [form] = useForm()
   const [action, setAction] = useState<IAction>('create')
   const [visible, setVisible] = useState(false)
+  const [menuTypeNum, setMenuTypeNum] = useState(1)
+  const [menuStatusNum, setMenuStatusNum] = useState(1)
   const [menuList, setMenuList] = useState<Menu.MenuItem[]>([])
 
   //获取菜单列表
@@ -40,25 +42,31 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
     const vaild = await form.validateFields()
     if (vaild) {
       if (action === 'create') {
+        // let itlList = {
+        //   id: Math.random().toString(),
+        //   createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
+        //   button: [],
+        //   children: [],
+        //   menuName: '',
+        //   icon: '',
+        //   menuType: 0,
+        //   menuState: 0,
+        //   menuCode: '',
+        //   parentId: '',
+        //   path: '',
+        //   component: '',
+        // }
         let newData = form.getFieldsValue()
-        let updateList = storage.get('menuList')
-        let arrData = {
-          createId: Math.random().toString(),
-          createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
-          updateTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
-          id: Math.random().toString(),
-          children: []
+        for (let k in newData){
+          if(k === 'id'){
+            newData[k] = Math.random().toString()
+          }else if(!newData[k]){
+            newData[k]=''
+          }
         }
-        const newsData = { ...newData, ...arrData }
-        console.log(updateList)
-        console.log(newsData)
-        if (!newData.parentId) {
-          newData.parentId = ''
-          updateList.push(newsData)
-          storage.set('menuList', updateList)
-          setMenuList(updateList)
-          await api.createMenu(newsData)
-        }
+        newData = {...newData,'createTime':`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`}
+        console.log(newData);         
+        await api.createMenu(newData)
       } else {
         console.log(form.getFieldsValue())
         await api.editMenu(form.getFieldsValue())
@@ -85,6 +93,16 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
     setVisible(false)
     form.resetFields()
   }
+  //切换菜单类型单选
+  const changeMenuType= (e:any)=>{
+    console.log(e.target.value);    
+    setMenuTypeNum(e.target.value)
+  }
+    //切换菜单状态单选
+    const changeMenuStatus= (e:any)=>{
+      console.log(e.target.value);    
+      setMenuStatusNum(e.target.value)
+    }
 
   return (
     <Modal
@@ -96,7 +114,7 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
       onOk={handleSubmit}
       onCancel={handleCancel}
     >
-      <Form form={form} labelAlign='right' labelCol={{ span: 3 }}>
+      <Form form={form} labelAlign='right' labelCol={{ span: 3 }} initialValues={{menuStatus:menuStatusNum,menuType:menuTypeNum}}>
         <Form.Item label='菜单ID' name='id' hidden={true}>
           <Input />
         </Form.Item>
@@ -110,7 +128,7 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
           />
         </Form.Item>
         <Form.Item label='菜单类型' name='menuType'>
-          <Radio.Group defaultValue={1}>
+          <Radio.Group defaultValue={menuTypeNum} onChange={changeMenuType}>
             <Radio value={1}>菜单</Radio>
             <Radio value={2}>按钮</Radio>
             <Radio value={3}>页面</Radio>
@@ -144,8 +162,8 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
         <Form.Item label='排序' name='orderBy' tooltip={{ title: '排序值越大越靠后', icon: <InfoCircleOutlined /> }}>
           <InputNumber placeholder='请输入排序值' style={{ width: 120 }} />
         </Form.Item>
-        <Form.Item label='菜单状态' name='menuState'>
-          <Radio.Group defaultValue={1}>
+        <Form.Item label='菜单状态' name='menuStatus' >
+          <Radio.Group defaultValue={menuStatusNum} onChange={changeMenuStatus}>
             <Radio value={1}>启用</Radio>
             <Radio value={2}>停用</Radio>
           </Radio.Group>

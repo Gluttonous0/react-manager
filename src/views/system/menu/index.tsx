@@ -24,12 +24,12 @@ export default function MenuList() {
   //调用apifox接口返回菜单列表
   const getMenuList = async () => {
     const data = await api.getMenuList(form.getFieldsValue())
-    if (storage.get('MenuList')) {
-      storage.set('MenuList', storage.get('MenuList'))
-      setData(storage.get('MenuList'))
+    if (storage.get('menuList')) {
+      storage.set('menuList', storage.get('menuList'))
+      setData(storage.get('menuList'))
       console.log('更新菜单缓存')
     } else {
-      storage.set('MenuList', data)
+      storage.set('menuList', data)
       setData(data)
       console.log('初始化列表')
     }
@@ -41,37 +41,37 @@ export default function MenuList() {
     getMenuList()
   }
 
-  //创建部门
+  //创建菜单
   const handleCreate = () => {
     menuRef.current?.open('create', {
       orderBy: data.length
     })
   }
 
-  //创建子级部门
-  const handleSubCreate = (id: string) => {
-    menuRef.current?.open('create', { parentId: id })
+  //创建子级菜单
+  const handleSubCreate = (record:Menu.MenuItem) => {
+    menuRef.current?.open('create', { parentId: record.id,orderBy:record.children?.length })
   }
 
-  //编辑部门
+  //编辑菜单
   const handleEdit = (record: Dept.DeptItem) => {
     console.log(record)
     menuRef.current?.open('edit', record)
   }
 
-  //删除部门
+  //删除菜单
   const handleDelete = (id: string) => {
     modal.confirm({
       title: '确认',
-      content: <span>确认删除该部门吗?</span>,
+      content: <span>确认删除该菜单吗?</span>,
       onOk() {
         handleDeleteSumbit(id)
       }
     })
   }
-  //删除部门接口
+  //删除菜单接口
   const handleDeleteSumbit = async (id: string) => {
-    await api.deleteDept({
+    await api.deleteMenu({
       id
     })
     let upData = [...data]
@@ -83,7 +83,7 @@ export default function MenuList() {
         upData.splice(i, 1)
       }
     }
-    storage.set('MenuList', upData)
+    storage.set('menuList', upData)
     setData(upData)
     message.success('删除成功')
     getMenuList()
@@ -139,7 +139,7 @@ export default function MenuList() {
       render(record) {
         return (
           <Space>
-            <Button type='text' onClick={() => handleSubCreate(record.id)}>
+            <Button type='text' onClick={() => handleSubCreate(record)}>
               新增
             </Button>
             <Button type='text' onClick={() => handleEdit(record)}>
@@ -156,11 +156,11 @@ export default function MenuList() {
 
   return (
     <div>
-      <Form className='search_form' layout='inline' form={form}>
+      <Form className='search_form' layout='inline' form={form} initialValues={{menuState:1}}>
         <Form.Item label='菜单名称' name='menuName'>
           <Input placeholder='用户名称' />
         </Form.Item>
-        <Form.Item label='菜单状态' name='menuState'>
+        <Form.Item label='菜单状态' name='menuState' >
           <Select style={{ width: 100 }}>
             <Select.Option value={1}>正常</Select.Option>
             <Select.Option value={2}>停用</Select.Option>

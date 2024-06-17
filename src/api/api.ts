@@ -81,6 +81,6 @@ export default {
   },
   //删除菜单
   deleteMenu(params: Menu.DelParams) {
-    return request.post('/menu/edit', params)
+    return request.post('/menu/delete', params)
   }
 }
