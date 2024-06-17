@@ -77,7 +77,7 @@ export default {
   },
   //编辑菜单
   editMenu(params: Menu.EditParams) {
-    return request.post('/menu/edit', params)
+    return request.post<Menu.EditParams>('/menu/edit', params)
   },
   //删除菜单
   deleteMenu(params: Menu.DelParams) {

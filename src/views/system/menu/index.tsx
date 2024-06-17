@@ -49,12 +49,12 @@ export default function MenuList() {
   }
 
   //创建子级菜单
-  const handleSubCreate = (record:Menu.MenuItem) => {
-    menuRef.current?.open('create', { parentId: record.id,orderBy:record.children?.length })
+  const handleSubCreate = (record: Menu.MenuItem) => {
+    menuRef.current?.open('create', { parentId: record.id, orderBy: record.children?.length })
   }
 
   //编辑菜单
-  const handleEdit = (record: Dept.DeptItem) => {
+  const handleEdit = (record: Menu.MenuItem) => {
     console.log(record)
     menuRef.current?.open('edit', record)
   }
@@ -66,7 +66,9 @@ export default function MenuList() {
       content: <span>确认删除该菜单吗?</span>,
       onOk() {
         handleDeleteSumbit(id)
-      }
+      },
+      okText: '确认',
+      cancelText: '取消'
     })
   }
   //删除菜单接口
@@ -156,11 +158,11 @@ export default function MenuList() {
 
   return (
     <div>
-      <Form className='search_form' layout='inline' form={form} initialValues={{menuState:1}}>
+      <Form className='search_form' layout='inline' form={form} initialValues={{ menuState: 1 }}>
         <Form.Item label='菜单名称' name='menuName'>
           <Input placeholder='用户名称' />
         </Form.Item>
-        <Form.Item label='菜单状态' name='menuState' >
+        <Form.Item label='菜单状态' name='menuState'>
           <Select style={{ width: 100 }}>
             <Select.Option value={1}>正常</Select.Option>
             <Select.Option value={2}>停用</Select.Option>

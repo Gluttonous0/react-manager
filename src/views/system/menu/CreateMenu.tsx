@@ -17,6 +17,12 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
   const [menuStatusNum, setMenuStatusNum] = useState(1)
   const [menuList, setMenuList] = useState<Menu.MenuItem[]>([])
 
+  useEffect(() => {
+    form.setFieldsValue({
+      menuStatus: 1,
+      menuType: 1
+    })
+  }, [visible])
   //获取菜单列表
   const getMenuList = async () => {
     await api.getMenuList()
@@ -42,46 +48,37 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
     const vaild = await form.validateFields()
     if (vaild) {
       if (action === 'create') {
-        // let itlList = {
-        //   id: Math.random().toString(),
-        //   createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
-        //   button: [],
-        //   children: [],
-        //   menuName: '',
-        //   icon: '',
-        //   menuType: 0,
-        //   menuState: 0,
-        //   menuCode: '',
-        //   parentId: '',
-        //   path: '',
-        //   component: '',
-        // }
         let newData = form.getFieldsValue()
-        for (let k in newData){
-          if(k === 'id'){
+        for (let k in newData) {
+          if (k === 'id') {
             newData[k] = Math.random().toString()
-          }else if(!newData[k]){
-            newData[k]=''
+          } else if (!newData[k]) {
+            newData[k] = ''
           }
         }
-        newData = {...newData,'createTime':`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`}
-        console.log(newData);         
-        await api.createMenu(newData)
+        newData = {
+          ...newData,
+          createTime: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`
+        }
+        console.log(newData)
+        const data = await api.createMenu(newData)
+        let upMenuList = storage.get('menuList')
+        upMenuList = [...upMenuList, data]
+        storage.set('menuList', upMenuList)
+        setMenuList(upMenuList)
       } else {
-        console.log(form.getFieldsValue())
-        await api.editMenu(form.getFieldsValue())
         const editData = form.getFieldsValue()
+        const data = await api.editMenu(editData)
         let deptsList = storage.get('menuList')
-        let newEditDept = deptsList.map((item: any) => {
-          if (item.id === editData.id) {
-            return { ...item, ...editData }
+        let newEditDept = deptsList.map((item: Menu.MenuItem) => {
+          if (item.id === data.id) {
+            return { ...item, ...data }
           } else {
             return item
           }
         })
-        console.log(newEditDept)
         storage.set('menuList', newEditDept)
-        // updateStore(newEditDept)
+        setMenuList(newEditDept)
       }
       message.success('操作成功')
       handleCancel()
@@ -94,15 +91,15 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
     form.resetFields()
   }
   //切换菜单类型单选
-  const changeMenuType= (e:any)=>{
-    console.log(e.target.value);    
+  const changeMenuType = (e: any) => {
+    console.log(e.target.value)
     setMenuTypeNum(e.target.value)
   }
-    //切换菜单状态单选
-    const changeMenuStatus= (e:any)=>{
-      console.log(e.target.value);    
-      setMenuStatusNum(e.target.value)
-    }
+  //切换菜单状态单选
+  const changeMenuStatus = (e: any) => {
+    console.log(e.target.value)
+    setMenuStatusNum(e.target.value)
+  }
 
   return (
     <Modal
@@ -113,8 +110,14 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
       cancelText='取消'
       onOk={handleSubmit}
       onCancel={handleCancel}
+      forceRender
     >
-      <Form form={form} labelAlign='right' labelCol={{ span: 3 }} initialValues={{menuStatus:menuStatusNum,menuType:menuTypeNum}}>
+      <Form
+        form={form}
+        labelAlign='right'
+        labelCol={{ span: 3 }}
+        initialValues={{ menuStatus: menuStatusNum, menuType: menuTypeNum }}
+      >
         <Form.Item label='菜单ID' name='id' hidden={true}>
           <Input />
         </Form.Item>
@@ -128,7 +131,7 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
           />
         </Form.Item>
         <Form.Item label='菜单类型' name='menuType'>
-          <Radio.Group defaultValue={menuTypeNum} onChange={changeMenuType}>
+          <Radio.Group onChange={changeMenuType}>
             <Radio value={1}>菜单</Radio>
             <Radio value={2}>按钮</Radio>
             <Radio value={3}>页面</Radio>
@@ -162,8 +165,8 @@ export default function CreateMenu(props: ImodalProp<Menu.EditParams>) {
         <Form.Item label='排序' name='orderBy' tooltip={{ title: '排序值越大越靠后', icon: <InfoCircleOutlined /> }}>
           <InputNumber placeholder='请输入排序值' style={{ width: 120 }} />
         </Form.Item>
-        <Form.Item label='菜单状态' name='menuStatus' >
-          <Radio.Group defaultValue={menuStatusNum} onChange={changeMenuStatus}>
+        <Form.Item label='菜单状态' name='menuStatus'>
+          <Radio.Group onChange={changeMenuStatus}>
             <Radio value={1}>启用</Radio>
             <Radio value={2}>停用</Radio>
           </Radio.Group>
