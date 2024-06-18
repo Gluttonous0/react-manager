@@ -185,7 +185,7 @@ export default function DeptList() {
             <Button type='text' onClick={() => handleEdit(record)}>
               编辑
             </Button>
-            <Button type='text' onClick={() => handleDelete(record.id)}>
+            <Button type='text' danger onClick={() => handleDelete(record.id)}>
               删除
             </Button>
           </Space>

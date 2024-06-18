@@ -10,6 +10,10 @@ export default {
   getUserInfo() {
     return request.get<User.UserItem>('/users/getUserInfo')
   },
+  //获取权限列表接口
+  getPermissionList() {
+    return request.get<{ buttonList: string[]; menuList: Menu.MenuItem[] }>('/users/getPermissionList')
+  },
   //获取工作台汇总数据
   getReportData() {
     return request.get<Dashboard.ReportData>('/order/dashboard/getReportData')

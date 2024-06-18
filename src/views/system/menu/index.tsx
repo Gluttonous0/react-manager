@@ -60,12 +60,16 @@ export default function MenuList() {
   }
 
   //删除菜单
-  const handleDelete = (id: string) => {
+  const handleDelete = (record: Menu.MenuItem) => {
+    let text = ''
+    if (record.menuType === 1) text = '菜单'
+    if (record.menuType === 2) text = '按钮'
+    if (record.menuType === 3) text = '页面'
     modal.confirm({
       title: '确认',
-      content: <span>确认删除该菜单吗?</span>,
+      content: `确认删除该${text}吗?`,
       onOk() {
-        handleDeleteSumbit(id)
+        handleDeleteSumbit(record.id)
       },
       okText: '确认',
       cancelText: '取消'
@@ -147,7 +151,7 @@ export default function MenuList() {
             <Button type='text' onClick={() => handleEdit(record)}>
               编辑
             </Button>
-            <Button type='text' onClick={() => handleDelete(record.id)}>
+            <Button type='text' danger onClick={() => handleDelete(record)}>
               删除
             </Button>
           </Space>
