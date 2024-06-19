@@ -2,6 +2,8 @@
  * 工具函数封装
  */
 
+import { Menu } from '@/types/api'
+
 //格式化金额
 export const formatMoney = (num?: Number | string) => {
   if (!num) {
@@ -74,4 +76,10 @@ export const formatState = (state: number) => {
   } else {
     return ''
   }
+}
+
+export const getMenuPath = (list: Menu.MenuItem[]): string[] => {
+  return list.reduce((result: string[], item: Menu.MenuItem) => {
+    return result.concat(Array.isArray(item.children) && !item.button ? getMenuPath(item.children) : item.path + '')
+  }, [])
 }
