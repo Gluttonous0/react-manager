@@ -8,7 +8,7 @@ import { Layout, Watermark } from 'antd'
 import NavHeader from '@/components/NavHeader'
 import NavFooter from '@/components/NvaFooter'
 import SideMenu from '@/components/Menu'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useRouteLoaderData } from 'react-router-dom'
 import styles from './index.module.less'
 import { useEffect } from 'react'
 import api from '@/api/api'
@@ -44,6 +44,10 @@ const App: React.FC = () => {
     console.log(data)
     updateUserInfo(data)
   }
+  
+  const data = useRouteLoaderData('')
+  console.log('data,',data);
+  
   return (
     <Watermark content='React'>
       <Layout>
