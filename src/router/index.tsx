@@ -1,7 +1,7 @@
 /**
  * 路由设置
  */
-import { Navigate, useRoutes } from 'react-router-dom'
+import { Navigate, createBrowserRouter, useRoutes } from 'react-router-dom'
 import Login from '@/views/login/Login'
 import Error from '@/views/Erorr'
 import NotFound from '@/views/NotFound'
@@ -63,8 +63,9 @@ const router = [
   }
 ]
 
-export default function Router() {
-  return useRoutes(router)
-}
+// export default function Router() {
+//   return useRoutes(router)
+// }
 
-// export default createBrowserRouter(router)  方式一路由
+//方式一路由
+export default createBrowserRouter(router)

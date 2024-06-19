@@ -35,8 +35,6 @@ const items: MenuItem[] = [
 ]
 
 const App: React.FC = () => {
-  const data = useRouteLoaderData('layout')
-  console.log('data,', data)
   const updateUserInfo = useBearStore(state => state.updateUserInfo)
   useEffect(() => {
     getUserInfo()
@@ -47,6 +45,8 @@ const App: React.FC = () => {
     updateUserInfo(data)
   }
 
+  const data = useRouteLoaderData('layout')
+  console.log('data,', data)
   return (
     <Watermark content='React'>
       <Layout>
