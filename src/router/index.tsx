@@ -1,7 +1,7 @@
 /**
  * 路由设置
  */
-import { Navigate, createBrowserRouter, useRoutes } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 import Login from '@/views/login/Login'
 import Error from '@/views/Erorr'
 import NotFound from '@/views/NotFound'
