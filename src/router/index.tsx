@@ -12,6 +12,7 @@ import User from '@/views/system/user'
 import Dept from '@/views/system/dept'
 import Menu from '@/views/system/menu'
 import AuthLoader from './AuthLoader'
+import Role from '@/views/system/role'
 
 const router = [
   {
@@ -42,6 +43,10 @@ const router = [
       {
         path: '/menuList',
         element: <Menu />
+      },
+      {
+        path: '/roleList',
+        element: <Role />
       }
     ]
   },

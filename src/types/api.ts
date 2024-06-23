@@ -162,3 +162,22 @@ export namespace Dashboard {
     }
   }
 }
+
+//角色列表
+export namespace Role {
+  export interface Parmas extends PageParams {
+    roleName?: string
+  }
+  export interface CreateParams {
+    roleName: string
+    ramark?: string
+  }
+  export interface RoleItem extends CreateParams {
+    id: string
+    permissionList: {
+      checkedKeys: string[]
+    }
+    updateTime: string
+    createTime: string
+  }
+}

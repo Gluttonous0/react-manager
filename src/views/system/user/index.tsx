@@ -54,7 +54,8 @@ export default function UserList() {
   }
 
   const { tableProps, search } = useAntdTable(getTableData, {
-    form
+    form,
+    defaultPageSize: 10
   })
 
   //获取用户列表
