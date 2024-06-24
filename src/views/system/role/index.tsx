@@ -1,12 +1,18 @@
 import api from '@/api/roleApi'
-import { User } from '@/types/api'
+import { Role, User } from '@/types/api'
 import { useAntdTable } from 'ahooks'
 import { useForm } from 'antd/es/form/Form'
 import { Button, Table, Form, Input, Select, Space, Modal, message } from 'antd'
 import CreateRole from './CreateRole'
+import { useRef } from 'react'
+import { IAction } from '@/types/modal'
+import { ColumnsType } from 'antd/es/table'
 
 export default function RoleList() {
   const [form] = useForm()
+  const roleRef = useRef<{
+    open:(type:IAction,data?:Role.RoleItem)=>void
+  }>()
   const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, formData: User.Params) => {
     return api
       .getRoleList({
@@ -27,7 +33,18 @@ export default function RoleList() {
     defaultPageSize: 10
   })
 
-  const columns = [
+  // const list = [{
+  //   id:'1',
+  //   roleName:'啊收到',
+  //   createTime:'2024年6月24日17:23:18',
+  //   updateTime:'2024年6月24日17:23:18',
+  //   remark:'dd',
+  //   permissionList: {
+  //     checkedKeys: ['2']
+  //   }
+  // }]
+
+  const columns:ColumnsType<Role.RoleItem> = [
     {
       title: '角色名称',
       dataIndex: 'roleName',
@@ -51,10 +68,10 @@ export default function RoleList() {
     {
       title: '操作',
       key: 'action',
-      render() {
+      render(record) {
         return (
           <Space>
-            <Button>编辑</Button>
+            <Button onClick={()=>handleEdit(record)}>编辑</Button>
             <Button>设置权限</Button>
             <Button danger>删除</Button>
           </Space>
@@ -63,6 +80,16 @@ export default function RoleList() {
     }
   ]
 
+  //新增按钮
+  const handleCreate = ()=>{
+    roleRef.current?.open('create')
+  }
+
+  //编辑按钮
+  const handleEdit = (data:Role.RoleItem)=>{
+    console.log(data);    
+    roleRef.current?.open('edit',data)
+  }
   return (
     <div className='role_wrap'>
       <Form className='search_form' form={form} layout='inline' initialValues={{ state: 0 }}>
@@ -87,7 +114,7 @@ export default function RoleList() {
             <Space>
               <Button
                 type='primary'
-                // onClick={handleCreate}
+                onClick={handleCreate}
               >
                 新增
               </Button>
@@ -101,9 +128,9 @@ export default function RoleList() {
             </Space>
           </div>
         </div>
-        <Table bordered rowKey='userId' columns={columns} {...tableProps} />;
+        <Table bordered rowKey='userId' columns={columns} {...tableProps}/>;
       </div>
-      <CreateRole />
+      <CreateRole mRef={roleRef} update={search.submit}/>
     </div>
   )
 }

@@ -180,4 +180,10 @@ export namespace Role {
     updateTime: string
     createTime: string
   }
+  export interface EditParams extends CreateParams{
+    id:string,
+  }
+  export interface DeleteParams {
+    id:string
+  }
 }

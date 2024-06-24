@@ -1,21 +1,52 @@
+import api from '@/api/roleApi'
+import { AnyObject, Role } from '@/types/api'
+import { IAction , ImodalProp} from '@/types/modal'
 import { Form, Input, Modal } from 'antd'
 import { useForm } from 'antd/es/form/Form'
-import { useState } from 'react'
+import { useImperativeHandle, useState } from 'react'
 
-export default function CreateRole() {
+export default function CreateRole(props:ImodalProp<Role.RoleItem>) {
   const [form] = useForm()
   const [visible, setVisible] = useState(false)
+  const [action, setAction] = useState<IAction>('create')
 
+  useImperativeHandle(props.mRef, () => {
+    return {
+      open
+    }
+  })
+
+  //调用弹窗显示方法
+  const open = (type: IAction, data?: AnyObject) => {
+    setAction(type)
+    setVisible(true)
+    if(data) {
+      form.setFieldsValue(data)
+    }
+  }
   //提交事件
-  const handleOk = () => {}
+  const handleOk = async() => {
+    const valid = await form.validateFields()    
+    if(valid){
+      const params = form.getFieldsValue()
+      if(action === 'create'){
+        await api.createRole(params)
+      } else {
+        await api.editRole(params)
+      }
+    }
+  }
 
   //取消事件
-  const handleCancle = () => {}
+  const handleCancle = () => {
+    setVisible(false)
+    form.resetFields()
+  }
   return (
     <Modal
-      title='新增角色'
+      title={action==='create'?'新增角色':'编辑角色'}
       width={700}
-      open={true}
+      open={visible}
       okText='确定'
       cancelText='取消'
       onOk={handleOk}
