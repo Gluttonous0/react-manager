@@ -2,15 +2,20 @@ import api from '@/api/roleApi'
 import { Role, User } from '@/types/api'
 import { useAntdTable } from 'ahooks'
 import { useForm } from 'antd/es/form/Form'
-import { Button, Table, Form, Input, Select, Space, Modal, message } from 'antd'
+import { Button, Table, Form, Input, Space } from 'antd'
 import CreateRole from './CreateRole'
 import { useRef } from 'react'
 import { IAction } from '@/types/modal'
 import { ColumnsType } from 'antd/es/table'
+import { message, modal, } from '@/utils/AntdGlobal'
+import SetPermission from './SetPermission'
 
 export default function RoleList() {
   const [form] = useForm()
   const roleRef = useRef<{
+    open:(type:IAction,data?:Role.RoleItem)=>void
+  }>()
+  const permissionRef = useRef<{
     open:(type:IAction,data?:Role.RoleItem)=>void
   }>()
   const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, formData: User.Params) => {
@@ -68,27 +73,47 @@ export default function RoleList() {
     {
       title: '操作',
       key: 'action',
-      render(record) {
+      render(record) {        
         return (
           <Space>
-            <Button onClick={()=>handleEdit(record)}>编辑</Button>
-            <Button>设置权限</Button>
-            <Button danger>删除</Button>
+            <Button type='text' onClick={()=>handleEdit(record)}>编辑</Button>
+            <Button type='text'onClick={()=>handlePermission(record)}>设置权限</Button>
+            <Button type='text' danger onClick={()=>handleDelete(record.id)}>删除</Button>
           </Space>
         )
       }
     }
   ]
-
+  //设置权限按钮
+const handlePermission = (record:Role.RoleItem)=>{
+  permissionRef.current?.open('edit',record)
+}
+  
   //新增按钮
   const handleCreate = ()=>{
     roleRef.current?.open('create')
   }
 
   //编辑按钮
-  const handleEdit = (data:Role.RoleItem)=>{
-    console.log(data);    
+  const handleEdit = (data:Role.RoleItem)=>{  
     roleRef.current?.open('edit',data)
+  }
+
+  //二次确认删除窗口
+  const handleDelete =(id:Role.DeleteParams)=>{
+    modal.confirm({
+      title:"删除角色",
+      content: '确认删除该角色吗?',
+      okText: '确认',
+      cancelText: '取消',
+      onOk:()=>handleDeleteRole(id)
+    })
+  }
+  //删除接口
+  const handleDeleteRole = async(id:Role.DeleteParams)=>{
+    await api.deleteRole(id)
+    message.success('删除成功')
+    search.submit()
   }
   return (
     <div className='role_wrap'>
@@ -128,9 +153,10 @@ export default function RoleList() {
             </Space>
           </div>
         </div>
-        <Table bordered rowKey='userId' columns={columns} {...tableProps}/>;
+        <Table bordered rowKey='id' columns={columns} {...tableProps}/>;
       </div>
       <CreateRole mRef={roleRef} update={search.submit}/>
+      <SetPermission mRef={permissionRef} update={search.submit}/>
     </div>
   )
 }

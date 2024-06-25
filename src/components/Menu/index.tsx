@@ -51,7 +51,6 @@ const SideMenu = () => {
         
       }
     })
-    console.log(treeList);    
     return treeList
   }
 

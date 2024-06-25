@@ -175,7 +175,8 @@ export namespace Role {
   export interface RoleItem extends CreateParams {
     id: string
     permissionList: {
-      checkedKeys: string[]
+      checkedKeys: string[],
+      halfCheckedKeys:string[]
     }
     updateTime: string
     createTime: string
@@ -185,5 +186,12 @@ export namespace Role {
   }
   export interface DeleteParams {
     id:string
+  }
+  export interface permission {
+    id: string
+    permissionList: {
+      checkedKeys: string[],
+      halfCheckedKeys:string[]
+    }
   }
 }

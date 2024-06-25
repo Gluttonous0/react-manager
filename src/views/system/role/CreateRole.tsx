@@ -1,6 +1,7 @@
 import api from '@/api/roleApi'
 import { AnyObject, Role } from '@/types/api'
 import { IAction , ImodalProp} from '@/types/modal'
+import { message } from '@/utils/AntdGlobal'
 import { Form, Input, Modal } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { useImperativeHandle, useState } from 'react'
@@ -34,6 +35,9 @@ export default function CreateRole(props:ImodalProp<Role.RoleItem>) {
       } else {
         await api.editRole(params)
       }
+      message.success('操作成功')
+      handleCancle()
+      props.update()
     }
   }
 

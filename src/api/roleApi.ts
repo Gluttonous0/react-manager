@@ -17,5 +17,9 @@ export default {
   //删除角色
   deleteRole(id:Role.DeleteParams){
     return request.post('/role/delete',id)
+  },
+  //设置权限
+  updatePermission(params:Role.Permission){
+    return request.post('/role/update/permission',params)
   }
 }
