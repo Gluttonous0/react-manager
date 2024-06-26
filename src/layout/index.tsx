@@ -8,11 +8,12 @@ import { Layout, Watermark } from 'antd'
 import NavHeader from '@/components/NavHeader'
 import NavFooter from '@/components/NvaFooter'
 import SideMenu from '@/components/Menu'
-import { Outlet} from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useRouteLoaderData } from 'react-router-dom'
 import styles from './index.module.less'
 import { useEffect } from 'react'
 import api from '@/api/api'
-import  { useBearStore } from '@/store'
+import { useBearStore } from '@/store'
+import { IAutnLoader } from '@/router/AuthLoader'
 const { Content, Sider } = Layout
 
 // type MenuItem = Required<MenuProps>['items'][number]
@@ -36,12 +37,19 @@ const { Content, Sider } = Layout
 
 const App: React.FC = () => {
   const updateUserInfo = useBearStore(state => state.updateUserInfo)
+  const { pathname } = useLocation()
   useEffect(() => {
     getUserInfo()
   }, [])
   const getUserInfo = async () => {
     const data = await api.getUserInfo()
     updateUserInfo(data)
+  }
+
+  const data = useRouteLoaderData('layout') as IAutnLoader
+  const staticPath = ['/welcome', '/403', '/404']
+  if (!data.menuPathList.includes(pathname) && !staticPath.includes(pathname)) {
+    return <Navigate to='/403' />
   }
 
   return (
