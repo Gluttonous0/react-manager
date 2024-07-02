@@ -14,10 +14,10 @@ import Menu from '@/views/system/menu'
 import AuthLoader from './AuthLoader'
 import Role from '@/views/system/role'
 
-const router = [
+export const router = [
   {
     path: '/',
-    element: <Navigate to='/welcome' />
+    element: <Navigate to='/welcome' />    
   },
   {
     id: 'layout',
@@ -42,7 +42,7 @@ const router = [
       },
       {
         path: '/menuList',
-        element: <Menu />
+        element: <Menu />,
       },
       {
         path: '/roleList',

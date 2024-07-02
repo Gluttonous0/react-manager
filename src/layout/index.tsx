@@ -13,27 +13,10 @@ import styles from './index.module.less'
 import { useEffect } from 'react'
 import api from '@/api/api'
 import { useBearStore } from '@/store'
-import { IAutnLoader } from '@/router/AuthLoader'
+import { IAuthLoader } from '@/router/AuthLoader'
+import { router }  from "@/router/index"
+import { searchRoute } from '@/utils'
 const { Content, Sider } = Layout
-
-// type MenuItem = Required<MenuProps>['items'][number]
-
-// function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
-//   return {
-//     key,
-//     icon,
-//     children,
-//     label
-//   } as MenuItem
-// }
-
-// const items: MenuItem[] = [
-//   getItem('Option 1', '1', <PieChartOutlined />),
-//   getItem('Option 2', '2', <DesktopOutlined />),
-//   getItem('User', 'sub1', <UserOutlined />, [getItem('Tom', '3'), getItem('Bill', '4'), getItem('Alex', '5')]),
-//   getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-//   getItem('Files', '9', <FileOutlined />)
-// ]
 
 const App: React.FC = () => {
   const updateUserInfo = useBearStore(state => state.updateUserInfo)
@@ -45,11 +28,15 @@ const App: React.FC = () => {
     const data = await api.getUserInfo()
     updateUserInfo(data)
   }
-
-  const data = useRouteLoaderData('layout') as IAutnLoader
-  const staticPath = ['/welcome', '/403', '/404']
-  if (!data.menuPathList.includes(pathname) && !staticPath.includes(pathname)) {
-    return <Navigate to='/403' />
+  const route = searchRoute(pathname,router)
+  if(route&&route.meta?.auth===false){
+    //继续执行
+  } else {
+    const data = useRouteLoaderData('layout') as IAuthLoader
+    const staticPath = ['/welcome', '/403', '/404']
+    if (!data.menuPathList.includes(pathname) && !staticPath.includes(pathname)) {
+      return <Navigate to='/403' />
+    }
   }
 
   return (

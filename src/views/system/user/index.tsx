@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import CreateUser from './CreateUser'
 import { IAction } from '@/types/modal'
 import { useAntdTable } from 'ahooks'
+import AuthButton from '@/components/AuthButton'
 
 export default function UserList() {
   const [form] = Form.useForm()
@@ -247,9 +248,9 @@ export default function UserList() {
           <div className='title'>用户列表</div>
           <div className='action'>
             <Space>
-              <Button type='primary' onClick={handleCreate}>
+              <AuthButton auth='create' type='primary' onClick={handleCreate}>
                 新增
-              </Button>
+              </AuthButton>
               <Button type='primary' danger onClick={handlePatchConfig}>
                 批量删除
               </Button>
