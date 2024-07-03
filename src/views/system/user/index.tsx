@@ -56,31 +56,9 @@ export default function UserList() {
 
   const { tableProps, search } = useAntdTable(getTableData, {
     form,
-    defaultPageSize: 10
+    defaultPageSize: 10,
   })
 
-  //获取用户列表
-  // const getUserList = async (params: PageParams) => {
-  //   const values = form.getFieldsValue()
-  //   const data = await api.getUserList({
-  //     ...values,
-  //     pageNum: params.pageNum,
-  //     pageSize: params.pageSize
-  //   })
-  //   // console.log('data', data)
-  //   // const list = Array.from({ length: 3 })
-  //   //   .fill({})
-  //   //   .map((item: any) => {
-  //   //     ;(item = { ...data.list[0] }), (item.userId = Math.random())
-  //   //     return item
-  //   //   })
-  //   setData(data.list)
-  //   setTotal(data.list.length)
-  //   // setPagination({
-  //   //   current: data.page.pageNum,
-  //   //   pageSize: data.page.pageSize
-  //   // })
-  // }
 
   const handleDataFromChild = (data: AnyObject[]) => {
     // 这个函数会被子组件调用来传递数据
@@ -143,7 +121,7 @@ export default function UserList() {
       message.success('删除成功')
       setUserIds([])
       search.reset()
-    } catch (error) {}
+    } catch (error) { }
   }
 
   const columns: ColumnsType<AnyObject> = [
@@ -248,9 +226,9 @@ export default function UserList() {
           <div className='title'>用户列表</div>
           <div className='action'>
             <Space>
-              <AuthButton auth='create' type='primary' onClick={handleCreate}>
+              <Button type='primary' onClick={handleCreate}>
                 新增
-              </AuthButton>
+              </Button>
               <Button type='primary' danger onClick={handlePatchConfig}>
                 批量删除
               </Button>
@@ -269,23 +247,6 @@ export default function UserList() {
           }}
           columns={columns}
           {...tableProps}
-          // dataSource={data}
-          // pagination={{
-          //   position: ['bottomRight'],
-          //   current: pagination.current,
-          //   pageSize: pagination.pageSize,
-          //   showQuickJumper: true,
-          //   showSizeChanger: true,
-          //   showTotal: function (total) {
-          //     return `总共${total}条`
-          //   },
-          //   onChange: (page, pageSize) => {
-          //     setPagination({
-          //       current: page,
-          //       pageSize
-          //     })
-          //   }
-          // }}
         />
         ;
       </div>
@@ -294,7 +255,7 @@ export default function UserList() {
         update={() => {
           search.reset()
         }}
-        // onDataReceived={handleDataFromChild}
+      // onDataReceived={handleDataFromChild}
       />
     </div>
   )

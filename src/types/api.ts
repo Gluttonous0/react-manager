@@ -175,14 +175,14 @@ export namespace Role {
   export interface RoleItem extends CreateParams {
     id: string
     permissionList: {
-      checkedKeys: string[]
+      checkedKeys: string[],
       halfCheckedKeys: string[]
     }
     updateTime: string
     createTime: string
   }
   export interface EditParams extends CreateParams {
-    id: string
+    id: string,
   }
   export interface DeleteParams {
     id: string
@@ -190,8 +190,51 @@ export namespace Role {
   export interface Permission {
     id: string
     permissionList: {
-      checkedKeys: string[]
+      checkedKeys: string[],
       halfCheckedKeys: string[]
     }
+  }
+}
+
+export namespace Order {
+  export enum IState {
+    doing = 1,
+    done = 2,
+    timeout = 3,
+    cance = 4
+  }
+  export interface CreateParams {
+    cityName: string,
+    userName: string,
+    mobile: number,
+    startAddress: string,//下单开始地址
+    endAddress: string //下单结束地址
+    orderAmount: number //订单金额
+    userPayAomunt: number //支付金额
+    driverAmount: number //支付金额
+    payType: number //支付方式  1:微信  2:支付宝
+    driverName: string //司机名称
+    vehicleName: string //订单车型
+    state: IState //订单状态   1:进行中  2:已完成  3:超时  4:取消
+    useTime: string //用车时间
+    endTime: string //订单结束时间
+  }
+  export interface OrderItem extends CreateParams {
+    id: string,
+    orderId: string //订单ID
+    route: Array<{ lng: string, lat: string }> //行事轨迹
+    craeteTime: string //创建时间
+    remark: string //备注
+  }
+
+  export interface SearchParams {
+    orderId?: string //订单编号
+    userName?: string //用户名称
+    state?: IState //订单状态   1:进行中  2:已完成  3:超时  4:取消
+  }
+  export interface Params extends PageParams {
+    orderId?: string //订单编号
+    userName?: string //用户名称
+    state?: IState //订单状态   1:进行中  2:已完成  3:超时  4:取消
   }
 }
