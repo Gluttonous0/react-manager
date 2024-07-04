@@ -237,4 +237,9 @@ export namespace Order {
     userName?: string //用户名称
     state?: IState //订单状态   1:进行中  2:已完成  3:超时  4:取消
   }
+  export interface DictItem {
+    id: string,
+    name: string
+  }
 }
+

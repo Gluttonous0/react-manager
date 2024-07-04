@@ -86,12 +86,25 @@ export const getMenuPath = (list: Menu.MenuItem[]): string[] => {
 }
 
 //递归获取路由对象
-export const searchRoute:any = (path:string,routes:any=[])=>{
-  for (const item of routes){
-    if(item.path === path) return item
-    if(item.children){
-      return searchRoute(path,item.children)
+export const searchRoute: any = (path: string, routes: any = []) => {
+  for (const item of routes) {
+    if (item.path === path) return item
+    if (item.children) {
+      return searchRoute(path, item.children)
     }
   }
   return ''
+}
+
+/**
+ * 手机号加密
+ */
+export const formateMobile = (mobile?: string | number) => {
+  if (!mobile) {
+    return
+  }
+  let newMobile = mobile.toString()
+  // newMobile = newMobile.slice(0, 3) + "****" + newMobile.slice(-4)   //截取方法
+  newMobile = newMobile.replace(/(\d{3})\d*(\d{4})/, "$1****$2") //正则表达式
+  return newMobile
 }

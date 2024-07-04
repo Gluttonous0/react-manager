@@ -5,13 +5,18 @@ import api from '@/api/orderApi'
 import { Order } from "@/types/api";
 import { ColumnsType } from "antd/es/table";
 import { useRef } from "react";
-import { IAction } from "@/types/modal";
 import CreateOrder from "./components/CreateOrder";
+import { formatMoney } from "@/utils";
+import OrderDetail from "./components/OrderDetail";
+
 
 export default function OrderList() {
   const [form] = useForm()
   const orderRef = useRef<{
     open: () => void
+  }>()
+  const detailRef = useRef<{
+    open: (orderId: string) => void
   }>()
   const getTableData = ({ current, pageSize }: { current: number; pageSize: number }, formData: Order.SearchParams) => {
     return api
@@ -49,22 +54,49 @@ export default function OrderList() {
     {
       title: '城市',
       dataIndex: 'cityName',
-      key: 'cityName'
+      key: 'cityName',
+      width: 80
     },
     {
       title: '下单地址',
       dataIndex: 'startAddress',
-      key: 'startAddress'
+      key: 'startAddress',
+      width: 120,
+      render(_, record) {
+        return (
+          <div>
+            <p>开始地址:{record.startAddress}</p>
+            <p>结束地址:{record.endAddress}</p>
+          </div>
+        )
+      }
     },
     {
       title: '订单金额',
       dataIndex: 'orderAmount',
-      key: 'orderAmount'
+      key: 'orderAmount',
+      render(orderAmount) {
+        return formatMoney(orderAmount)
+      }
     },
     {
       title: '订单状态',
-      dataIndex: 'status',
-      key: 'status'
+      dataIndex: 'state',
+      key: 'state',
+      render(state) {
+        if (state === 1) {
+          return "进行中"
+        }
+        if (state === 2) {
+          return "已完成"
+        }
+        if (state === 3) {
+          return "超时"
+        }
+        if (state === 4) {
+          return "取消"
+        }
+      }
     },
     {
       title: '用户名称',
@@ -79,10 +111,10 @@ export default function OrderList() {
     {
       title: '操作',
       key: 'action',
-      render() {
+      render(record) {
         return (
           <Space>
-            <Button type="text">详情</Button>
+            <Button type="text" onClick={() => handleDetail(record.orderId)}>详情</Button>
             <Button type="text">打点</Button>
             <Button type="text">轨迹</Button>
             <Button type="text" danger>删除</Button>
@@ -91,6 +123,12 @@ export default function OrderList() {
       }
     },
   ]
+
+  //订单详情
+  const handleDetail = (orderId: string) => {
+    console.log(orderId);
+    detailRef.current?.open(orderId)
+  }
 
   //创建订单
   const handleCreate = () => {
@@ -145,6 +183,7 @@ export default function OrderList() {
         ;
       </div>
       <CreateOrder mRef={orderRef} update={search.submit} />
+      <OrderDetail mRef={detailRef} />
     </div>
   )
 }

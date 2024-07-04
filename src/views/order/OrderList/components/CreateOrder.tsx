@@ -1,11 +1,32 @@
 import { ImodalProp } from '@/types/modal'
 import { Col, DatePicker, Form, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
 import { log } from 'console'
-import { useImperativeHandle, useState } from 'react'
+import { useEffect, useImperativeHandle, useState } from 'react'
+import locale from 'antd/lib/date-picker/locale/zh_CN'
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+import api from '@/api/orderApi'
+import { Order } from '@/types/api'
+import { message } from '@/utils/AntdGlobal'
+moment.locale('zh-cn');
 
 export default function CreateOrder(props: ImodalProp) {
   const [visible, setVisible] = useState(false)
+  const [cityList, setCityList] = useState<Order.DictItem[]>([])
+  const [vehicleList, setVehicleList] = useState<Order.DictItem[]>([])
   const [form] = Form.useForm()
+
+  useEffect(() => {
+    getInitData()
+  }, [])
+
+  //获取车型,城市下拉列表
+  const getInitData = async () => {
+    const cityData = await api.getCityList()
+    const vehicleData = await api.getVehicleList()
+    setVehicleList(vehicleData)
+    setCityList(cityData)
+  }
 
   //弹窗暴露
   useImperativeHandle(props.mRef, () => {
@@ -23,8 +44,15 @@ export default function CreateOrder(props: ImodalProp) {
   }
 
   //提交订单
-  const handleOk = () => {
-    console.log()
+  const handleOk = async () => {
+    const valid = await form.validateFields()
+    if (valid) {
+      api.createOrder(form.getFieldsValue())
+      message.success("操作成功")
+      handleCancel()
+      props.update()
+    }
+
   }
   return (
     <Modal
@@ -41,14 +69,18 @@ export default function CreateOrder(props: ImodalProp) {
           <Col span={12}>
             <Form.Item name='cityName' label='城市名称' rules={[{ required: true, message: '请选择城市名称' }]}>
               <Select placeholder='请选择城市名称'>
-                <Select.Option value='1'>北京</Select.Option>
+                {cityList.map(item => {
+                  return <Select.Option value={item.name} key={item.id}>{item.name}</Select.Option>
+                })}
               </Select>
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item name='vehicleName' label='车型名称' rules={[{ required: true, message: '请选择车型' }]}>
               <Select placeholder='请选择车型'>
-                <Select.Option value='1'>面包车</Select.Option>
+                {vehicleList.map(item => {
+                  return <Select.Option value={item.name} key={item.id}>{item.name}</Select.Option>
+                })}
               </Select>
             </Form.Item>
           </Col>
@@ -124,12 +156,12 @@ export default function CreateOrder(props: ImodalProp) {
         <Row>
           <Col span={12}>
             <Form.Item name='useTime' label='用车时间'>
-              <DatePicker placeholder='请选择日期' />
+              <DatePicker placeholder='请选择日期' locale={locale} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item name='endTime' label='结束时间'>
-              <DatePicker placeholder='请选择日期' />
+              <DatePicker placeholder='请选择日期' locale={locale} />
             </Form.Item>
           </Col>
         </Row>

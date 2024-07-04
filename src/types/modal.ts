@@ -8,3 +8,8 @@ export interface ImodalProp<T = User.UserItem> {
   update: () => void
   // onDataReceived: (data: AnyObject[], num: number) => void
 }
+
+export interface IDetailProp {
+  mRef: MutableRefObject<{ open: (orderId: string) => void } | undefined>
+  // onDataReceived: (data: AnyObject[], num: number) => void
+}
