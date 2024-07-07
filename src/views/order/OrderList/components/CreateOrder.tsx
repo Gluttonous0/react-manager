@@ -1,14 +1,13 @@
 import { ImodalProp } from '@/types/modal'
-import { Col, DatePicker, Form, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
-import { log } from 'console'
+import { Col, DatePicker, Form, Input, Modal, Row, Select } from 'antd'
 import { useEffect, useImperativeHandle, useState } from 'react'
 import locale from 'antd/lib/date-picker/locale/zh_CN'
-import moment from 'moment';
-import 'moment/locale/zh-cn';
+import moment from 'moment'
+import 'moment/locale/zh-cn'
 import api from '@/api/orderApi'
 import { Order } from '@/types/api'
 import { message } from '@/utils/AntdGlobal'
-moment.locale('zh-cn');
+moment.locale('zh-cn')
 
 export default function CreateOrder(props: ImodalProp) {
   const [visible, setVisible] = useState(false)
@@ -48,11 +47,10 @@ export default function CreateOrder(props: ImodalProp) {
     const valid = await form.validateFields()
     if (valid) {
       api.createOrder(form.getFieldsValue())
-      message.success("操作成功")
+      message.success('操作成功')
       handleCancel()
       props.update()
     }
-
   }
   return (
     <Modal
@@ -70,7 +68,11 @@ export default function CreateOrder(props: ImodalProp) {
             <Form.Item name='cityName' label='城市名称' rules={[{ required: true, message: '请选择城市名称' }]}>
               <Select placeholder='请选择城市名称'>
                 {cityList.map(item => {
-                  return <Select.Option value={item.name} key={item.id}>{item.name}</Select.Option>
+                  return (
+                    <Select.Option value={item.name} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  )
                 })}
               </Select>
             </Form.Item>
@@ -79,7 +81,11 @@ export default function CreateOrder(props: ImodalProp) {
             <Form.Item name='vehicleName' label='车型名称' rules={[{ required: true, message: '请选择车型' }]}>
               <Select placeholder='请选择车型'>
                 {vehicleList.map(item => {
-                  return <Select.Option value={item.name} key={item.id}>{item.name}</Select.Option>
+                  return (
+                    <Select.Option value={item.name} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  )
                 })}
               </Select>
             </Form.Item>

@@ -175,14 +175,14 @@ export namespace Role {
   export interface RoleItem extends CreateParams {
     id: string
     permissionList: {
-      checkedKeys: string[],
+      checkedKeys: string[]
       halfCheckedKeys: string[]
     }
     updateTime: string
     createTime: string
   }
   export interface EditParams extends CreateParams {
-    id: string,
+    id: string
   }
   export interface DeleteParams {
     id: string
@@ -190,7 +190,7 @@ export namespace Role {
   export interface Permission {
     id: string
     permissionList: {
-      checkedKeys: string[],
+      checkedKeys: string[]
       halfCheckedKeys: string[]
     }
   }
@@ -204,10 +204,10 @@ export namespace Order {
     cance = 4
   }
   export interface CreateParams {
-    cityName: string,
-    userName: string,
-    mobile: number,
-    startAddress: string,//下单开始地址
+    cityName: string
+    userName: string
+    mobile: number
+    startAddress: string //下单开始地址
     endAddress: string //下单结束地址
     orderAmount: number //订单金额
     userPayAomunt: number //支付金额
@@ -220,9 +220,9 @@ export namespace Order {
     endTime: string //订单结束时间
   }
   export interface OrderItem extends CreateParams {
-    id: string,
+    id: string
     orderId: string //订单ID
-    route: Array<{ lng: string, lat: string }> //行事轨迹
+    route: Array<{ lng: string; lat: string }> //行事轨迹
     craeteTime: string //创建时间
     remark: string //备注
   }
@@ -238,8 +238,11 @@ export namespace Order {
     state?: IState //订单状态   1:进行中  2:已完成  3:超时  4:取消
   }
   export interface DictItem {
-    id: string,
+    id: string
     name: string
   }
+  export interface OrderRoute {
+    orderId: string
+    route: Array<{ lng: string; lat: string }>
+  }
 }
-

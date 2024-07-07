@@ -14,6 +14,7 @@ import Menu from '@/views/system/menu'
 import AuthLoader from './AuthLoader'
 import Role from '@/views/system/role'
 import OrderList from '@/views/order/OrderList'
+import OrderCluster from '@/views/order/OrderCluster'
 
 export const router = [
   {
@@ -43,7 +44,7 @@ export const router = [
       },
       {
         path: '/menuList',
-        element: <Menu />,
+        element: <Menu />
       },
       {
         path: '/roleList',
@@ -52,6 +53,10 @@ export const router = [
       {
         path: '/orderList',
         element: <OrderList />
+      },
+      {
+        path: '/orderCluster',
+        element: <OrderCluster />
       }
     ]
   },
