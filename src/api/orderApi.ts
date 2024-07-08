@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { ResultData, Order } from '@/types/api'
+import { ResultData, Order, Driver } from '@/types/api'
 
 export default {
   //获取订单列表
@@ -37,5 +37,9 @@ export default {
   //获取城市聚合点数据
   getCityData(cityId: number) {
     return request.get<Array<{ lng: string; lat: string }>>(`/order/cluster`, { cityId: cityId })
+  },
+  //获取司机列表
+  getDriverList(params: Driver.SearchParams) {
+    return request.get<ResultData<Driver.DriverItem>>('/order/driver/list', params)
   }
 }

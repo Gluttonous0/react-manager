@@ -2,21 +2,14 @@
  * 顶部导航栏
  */
 import { MenuUnfoldOutlined, DownOutlined } from '@ant-design/icons'
-import { Breadcrumb, Switch, Dropdown } from 'antd'
+import { Switch, Dropdown } from 'antd'
 import type { MenuProps } from 'antd'
 import styles from './index.module.less'
 import store, { useBearStore } from '@/store'
 import storage from '@/utils/storage'
+import BreadCrumb from './BreadCrumb'
 const NavHeader = () => {
   const userInfo = useBearStore(state => state.userInfo)
-  const breadList = [
-    {
-      title: '首页'
-    },
-    {
-      title: '工作台'
-    }
-  ]
 
   const items: MenuProps['items'] = [
     {
@@ -38,7 +31,7 @@ const NavHeader = () => {
     <div className={styles.navHeader}>
       <div className={styles.left}>
         <MenuUnfoldOutlined />
-        <Breadcrumb items={breadList} style={{ marginLeft: 10 }} />
+        <BreadCrumb />
       </div>
       <div className='right'>
         <Switch checkedChildren='暗黑' unCheckedChildren='默认' style={{ marginRight: 10 }} />
@@ -54,3 +47,4 @@ const NavHeader = () => {
 }
 
 export default NavHeader
+
