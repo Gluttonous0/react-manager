@@ -1,10 +1,8 @@
 import './App.less'
-import { BrowserRouter, RouterProvider } from 'react-router-dom'
-import Router from './router'
+import { RouterProvider } from 'react-router-dom'
 import router from './router'
 import { ConfigProvider, App as AntdApp } from 'antd'
 import AntdGlobal from './utils/AntdGlobal'
-
 
 function App() {
   //方式一路由

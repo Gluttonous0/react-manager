@@ -14,8 +14,9 @@ import { useEffect } from 'react'
 import api from '@/api/api'
 import { useBearStore } from '@/store'
 import { IAuthLoader } from '@/router/AuthLoader'
-import { router }  from "@/router/index"
+import { router } from '@/router/index'
 import { searchRoute } from '@/utils'
+import TabsFC from '@/components/Tabs'
 const { Content, Sider } = Layout
 
 const App: React.FC = () => {
@@ -28,8 +29,8 @@ const App: React.FC = () => {
     const data = await api.getUserInfo()
     updateUserInfo(data)
   }
-  const route = searchRoute(pathname,router)
-  if(route&&route.meta?.auth===false){
+  const route = searchRoute(pathname, router)
+  if (route && route.meta?.auth === false) {
     //继续执行
   } else {
     const data = useRouteLoaderData('layout') as IAuthLoader
@@ -50,6 +51,7 @@ const App: React.FC = () => {
         <Layout>
           {/* 顶部导航栏 */}
           <NavHeader />
+          <TabsFC />
           <Content className={styles.content}>
             <div className={styles.wapper}>
               <Outlet></Outlet>
