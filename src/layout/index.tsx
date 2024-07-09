@@ -30,10 +30,10 @@ const App: React.FC = () => {
     updateUserInfo(data)
   }
   const route = searchRoute(pathname, router)
+  const data = useRouteLoaderData('layout') as IAuthLoader
   if (route && route.meta?.auth === false) {
     //继续执行
   } else {
-    const data = useRouteLoaderData('layout') as IAuthLoader
     const staticPath = ['/welcome', '/403', '/404']
     if (!data.menuPathList.includes(pathname) && !staticPath.includes(pathname)) {
       return <Navigate to='/403' />
