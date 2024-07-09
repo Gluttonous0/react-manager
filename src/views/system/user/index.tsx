@@ -8,6 +8,7 @@ import CreateUser from './CreateUser'
 import { IAction } from '@/types/modal'
 import { useAntdTable } from 'ahooks'
 import AuthButton from '@/components/AuthButton'
+import SearchForm from '@/components/SearchForm'
 
 export default function UserList() {
   const [form] = Form.useForm()
@@ -56,9 +57,8 @@ export default function UserList() {
 
   const { tableProps, search } = useAntdTable(getTableData, {
     form,
-    defaultPageSize: 10,
+    defaultPageSize: 10
   })
-
 
   const handleDataFromChild = (data: AnyObject[]) => {
     // 这个函数会被子组件调用来传递数据
@@ -121,7 +121,7 @@ export default function UserList() {
       message.success('删除成功')
       setUserIds([])
       search.reset()
-    } catch (error) { }
+    } catch (error) {}
   }
 
   const columns: ColumnsType<AnyObject> = [
@@ -195,7 +195,7 @@ export default function UserList() {
 
   return (
     <div className='user_list'>
-      <Form className='search_form' form={form} layout='inline' initialValues={{ state: 0 }}>
+      <SearchForm form={form} initialValues={{ state: 0 }} submit={search.submit} reset={search.reset}>
         <Form.Item name='userId' label='用户ID'>
           <Input placeholder='请输入用户ID' />
         </Form.Item>
@@ -210,17 +210,7 @@ export default function UserList() {
             <Select.Option value={3}>试用期</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type='primary' onClick={() => handleClick(1)}>
-              搜索
-            </Button>
-            <Button type='default' onClick={() => handleClick(2)}>
-              重置
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
+      </SearchForm>
       <div className='base_table'>
         <div className='header_wrapper'>
           <div className='title'>用户列表</div>
@@ -255,7 +245,7 @@ export default function UserList() {
         update={() => {
           search.reset()
         }}
-      // onDataReceived={handleDataFromChild}
+        // onDataReceived={handleDataFromChild}
       />
     </div>
   )
