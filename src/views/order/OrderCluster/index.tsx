@@ -53,7 +53,7 @@ export default function OrderCluster() {
         <Select.Option value={10003}>上海</Select.Option>
         <Select.Option value={10004}>南京</Select.Option>
       </Select>
-      <div id='clusterMap' style={{ height: 'calc(100vh - 212px)' }}></div>
+      <div id='clusterMap' style={{ height: 'calc(100vh - 252px)' }}></div>
     </div>
   )
 }
