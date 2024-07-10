@@ -1,6 +1,7 @@
 import resso from 'resso'
 import { create } from 'zustand'
 import { Dept, User } from '@/types/api'
+import storage from '@/utils/storage'
 
 const store = resso({
   token: '',
@@ -14,8 +15,10 @@ export const useBearStore = create<{
   token: string
   userInfo: User.UserItem
   collapsed: boolean
+  isDark: boolean
   updateToken: (token: string) => void
   updateCollapsed: () => void
+  updateTheme: (isDark: boolean) => void
   updateUserInfo: (userInfo: User.UserItem) => void
 }>(set => ({
   token: '',
@@ -35,6 +38,7 @@ export const useBearStore = create<{
     job: ''
   },
   collapsed: false,
+  isDark: storage.get('isDark') || false,
   updateToken: token => set({ token }),
   updateCollapsed: () =>
     set(state => {
@@ -45,14 +49,14 @@ export const useBearStore = create<{
   updateUserInfo: (userInfo: User.UserItem) =>
     set({
       userInfo
-    })
+    }),
+  updateTheme: (isDark: boolean) => set({ isDark })
 }))
-
 
 export const useDeptStore = create<{
   deptList: any[]
-  updateList: (deptList: any[]) => void,
-  collapsed: boolean,
+  updateList: (deptList: any[]) => void
+  collapsed: boolean
   updateCollapsed: () => void
 }>(set => ({
   deptList: [],
@@ -60,9 +64,5 @@ export const useDeptStore = create<{
   updateCollapsed: () => set(state => ({ collapsed: !state.collapsed })),
   updateList: (deptList: any[]) => set({ deptList })
 }))
-
-
-
-
 
 export default store

@@ -1,10 +1,13 @@
 import './App.less'
 import { RouterProvider } from 'react-router-dom'
 import router from './router'
-import { ConfigProvider, App as AntdApp } from 'antd'
+import { ConfigProvider, App as AntdApp, theme } from 'antd'
 import AntdGlobal from './utils/AntdGlobal'
+import './style/theme.less'
+import { useBearStore } from './store'
 
 function App() {
+  const isDark = useBearStore(state => state.isDark)
   //方式一路由
   return (
     <>
@@ -17,7 +20,8 @@ function App() {
 
             // 派生变量，影响范围小
             // colorBgContainer: '#f6ffed'
-          }
+          },
+          algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm
         }}
       >
         {/* <BrowserRouter> */}

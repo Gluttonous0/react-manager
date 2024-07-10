@@ -8,9 +8,12 @@ import styles from './index.module.less'
 import store, { useBearStore } from '@/store'
 import storage from '@/utils/storage'
 import BreadCrumb from './BreadCrumb'
+import { useEffect } from 'react'
 const NavHeader = () => {
-  const userInfo = useBearStore(state => state.userInfo)
-
+  const { userInfo, isDark, updateTheme } = useBearStore()
+  useEffect(() => {
+    handleDark(isDark)
+  }, [])
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -27,6 +30,18 @@ const NavHeader = () => {
       location.href = '/login?callback=' + encodeURIComponent(location.href)
     }
   }
+
+  const handleDark = (isDark: boolean) => {
+    if (isDark) {
+      document.documentElement.dataset.theme = 'dark'
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.dataset.theme = 'light'
+      document.documentElement.classList.remove('dark')
+    }
+    storage.set('isDark', isDark)
+    updateTheme(isDark)
+  }
   return (
     <div className={styles.navHeader}>
       <div className={styles.left}>
@@ -34,7 +49,13 @@ const NavHeader = () => {
         <BreadCrumb />
       </div>
       <div className='right'>
-        <Switch checkedChildren='暗黑' unCheckedChildren='默认' style={{ marginRight: 10 }} />
+        <Switch
+          checked={isDark}
+          checkedChildren='暗黑'
+          unCheckedChildren='默认'
+          style={{ marginRight: 10 }}
+          onChange={handleDark}
+        />
         <Dropdown menu={{ items, onClick }} trigger={['click']}>
           <span className={styles.nickName}>
             {userInfo.userName}
@@ -47,4 +68,3 @@ const NavHeader = () => {
 }
 
 export default NavHeader
-
