@@ -19,7 +19,7 @@ export default function Login() {
   const onFinish = async (values: Logins.params) => {
     try {
       setLoading(true)
-      const data: any = await api.login(values)
+      const data: any = await api.login({ ...values, userPwd: btoa(values.userPwd) })
       console.log(data.code)
       setLoading(false)
       storage.set('token', data)
